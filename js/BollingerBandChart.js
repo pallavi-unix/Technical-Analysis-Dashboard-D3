@@ -10,6 +10,9 @@ function loadBollingerChart(ksData) {
         d.Volume = +d.Volume;
     });
 
+    console.log("ksData",ksData)
+    
+
     d3.select("#chart").selectAll("*").remove();
 
     // Set the dimensions and margins of the chart
@@ -55,6 +58,7 @@ function loadBollingerChart(ksData) {
         .attr("class", "line")
         .attr("d", lineHigh)
         .style("stroke", "green");
+
     svg.append("path")
         .datum(ksData)
         .attr("class", "line")
@@ -69,9 +73,17 @@ function loadBollingerChart(ksData) {
 
 
     // Define x axis with yearly tick format
+    // var xAxis = d3.axisBottom(xScale)
+    //     .ticks(d3.timeYear.every(1))
+    //     .tickFormat(d3.timeFormat("%Y"));
+
+    ///
     var xAxis = d3.axisBottom(xScale)
-        .ticks(d3.timeYear.every(1))
-        .tickFormat(d3.timeFormat("%Y"));
+    .tickFormat(d3.timeFormat("%b %d, %Y"));
+
+    // Define x axis with custom tick format for quarters and full dates
+
+
 
 
     // Append x axis to the chart
@@ -79,6 +91,7 @@ function loadBollingerChart(ksData) {
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis);
+  
 
 
     // Add y axis

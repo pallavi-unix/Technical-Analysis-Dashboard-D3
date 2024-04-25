@@ -29,7 +29,15 @@ function loadData(company, interval) {
         genRaw = data;
         mainjs(interval)
         displayLatestInfo()
+
+
+        // var compressedData = dataCompress(_data, interval);
+
+        
         loadBollingerChart(_data)
+
+
+
         const cyclePlotConfig = {
             parentElement: '#cyclePlot',
             containerWidth: 900,

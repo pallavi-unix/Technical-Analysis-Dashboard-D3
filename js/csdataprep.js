@@ -34,11 +34,11 @@ function timeCompare(date, interval) {
 
 
 function dataCompress(data, interval) {
-
-
   var nestedData = d3.group(data, function(d) {
     return timeCompare(d.TIMESTAMP, interval);
   });
+
+
   var compressedData = Array.from(nestedData, function([key, values]) {
     var rollupResult = {
       TIMESTAMP: timeCompare(values[values.length - 1].TIMESTAMP, interval),
