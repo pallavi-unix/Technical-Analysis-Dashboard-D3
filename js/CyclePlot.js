@@ -10,9 +10,9 @@ class CyclePlot {
     constructor(_config, _data, _colorScale) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 900,
+            containerWidth: _config.containerWidth || 850,
             containerHeight: _config.containerHeight || 500,
-            margin: _config.margin || { top: 25, right: 20, bottom: 50, left: 35 }
+            margin: _config.margin || { top: 25, right: 90, bottom: 75, left: 50 }
         };
         this.data = _data;
         this.colorScale = _colorScale;
@@ -79,10 +79,12 @@ class CyclePlot {
 
 
         const yearGroups = Array.from(d3.group(vis.data, d => d.Date.getFullYear()), ([key]) => key);
+        
+        var customColors = ['#0DFF0D', '#8c564b', '#ff7f0e',  '#00FFFF', '#DE00DE'];
+
         vis.colorScale = d3.scaleOrdinal()
             .domain(yearGroups)
-            .range(d3.schemeCategory10);
-
+            .range(customColors);
 
         yearGroups.forEach(year => {
             const yearData = vis.quarterlyVolumes.filter(d => d.Quarter.startsWith(year));
@@ -90,7 +92,7 @@ class CyclePlot {
                 .datum(yearData)
                 .attr("fill", "none")
                 .attr("stroke", vis.colorScale(year))
-                .attr("stroke-width", 2)
+                .attr("stroke-width", 3)
                 .attr("d", vis.lineGenerator);
 
             const lastQuarterOfYear = `${year}-Q4`;
@@ -129,7 +131,7 @@ class CyclePlot {
 
         vis.svg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", -vis.config.margin.left)
+            .attr("y", -60)
             .attr("x", -vis.height / 2)
             .attr("dy", "1em")
             .style("text-anchor", "middle")

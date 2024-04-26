@@ -42,7 +42,7 @@ function loadData(company, interval) {
             parentElement: '#cyclePlot',
             containerWidth: 900,
             containerHeight: 500,
-            margin: { top: 25, right: 20, bottom: 75, left: 50 }
+            margin: { top: 25, right: 70, bottom: 75, left: 60 }
         };
         const volumnBarChartConfig = {
             parentElement: '#volumnBarChart',
