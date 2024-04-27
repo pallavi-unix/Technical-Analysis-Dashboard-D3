@@ -7,6 +7,17 @@ var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" };
 var genRaw, genData;
 
 
+// const intervalSelector = document.getElementById('interval-selector');
+// const intervalSelectorContainer = document.getElementById('interval-selector-container');
+
+// intervalSelectorContainer.addEventListener('click', function(event) {
+//     const interval = event.target.getAttribute('value');
+//     if (interval !== null) {
+//         const company = document.getElementById('company-selector').value;
+//         loadData(company, interval);
+        
+//     }
+// });
 
 document.getElementById('interval-selector').addEventListener('change', event => {
     const interval = event.target.value;
