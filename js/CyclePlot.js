@@ -43,7 +43,6 @@ class CyclePlot {
 
     }
 
-    
     updateVis() {
         let vis = this;
         vis.quarterlyData = d3.rollup(vis.data, v => d3.mean(v, d => d.Volume), d => {
@@ -67,7 +66,7 @@ class CyclePlot {
         let vis = this;
         let hoveredQuarter;
         let hoveredQuarterDatum;
-
+        let clickedPoint;
 
         vis.lineGenerator = d3.line()
             .x(d => vis.xScale(d.Quarter) + vis.xScale.bandwidth() / 2)
@@ -127,11 +126,15 @@ class CyclePlot {
                 })
                 .on("click", function () {
 
+                    if (clickedPoint) {
+                        clickedPoint.remove();
+                    }
+
                     vis.svg.selectAll(".clicked-markup").remove();
 
                     const markupX = vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2;
                     const markupY = vis.yScale(hoveredQuarterDatum.Volume);
-                    vis.svg.append("circle")
+                    clickedPoint =vis.svg.append("circle")
                         .attr("cx", markupX)
                         .attr("cy", markupY)
                         .attr("r", 7)
@@ -149,6 +152,17 @@ class CyclePlot {
                     console.log("Original data for selected quarter from cycle plot:", selectedData);
 
 
+                });
+
+                d3.select("body").on("click", function (event) {
+                    // Check if the click event target is outside of the graph area
+                    if (!vis.svg.node().contains(event.target)) {
+                        // Remove the clicked point
+                        if (clickedPoint) {
+                            clickedPoint.remove();
+                            clickedPoint = null; // Reset the clickedPoint variable
+                        }
+                    }
                 });
 
 
