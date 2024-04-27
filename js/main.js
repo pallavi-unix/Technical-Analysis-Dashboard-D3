@@ -20,9 +20,14 @@ document.getElementById('company-selector').addEventListener('change', event => 
     loadData(company, interval);
 });
 
+document.getElementById('interval-selector-volumnchart').addEventListener('change', event => {
+    const volumnInterval = event.target.value;
+    const company = document.getElementById('company-selector').value;
+    const interval = document.getElementById('interval-selector').value;
+    loadData(company, interval, volumnInterval);
+});
 
-
-function loadData(company, interval) {
+function loadData(company, interval, volumnInterval) {
 
     d3.csv(`data/${company}.csv`, genType).then(_data => {
         const data = _data
@@ -44,17 +49,23 @@ function loadData(company, interval) {
             containerHeight: 500,
             margin: { top: 25, right: 20, bottom: 75, left: 50 }
         };
+        
+
+        d3.select('#cyclePlot svg').remove();
+        
+        const cyclePlotChart = new CyclePlot(cyclePlotConfig, data);
+        cyclePlotChart.updateVis();
+
+        //Pallavi's Volumn chart
+
+        d3.select('#volumnBarChart svg').remove();
+
         const volumnBarChartConfig = {
             parentElement: '#volumnBarChart',
             containerWidth: 900,
             containerHeight: 500,
             margin: { top: 80, right: 20, bottom: 100, left: 100 }
         };
-
-        d3.select('#cyclePlot svg').remove();
-        d3.select('#volumnBarChart svg').remove();
-        const cyclePlotChart = new CyclePlot(cyclePlotConfig, data);
-        cyclePlotChart.updateVis();
         const volumnBarChart = new VolumnBarChart(volumnBarChartConfig, data);
         volumnBarChart.updateVis();
 
@@ -64,7 +75,41 @@ function loadData(company, interval) {
 
 }
 
-loadData('Amazon', 'day')
+function loadDataForVolumnChart(company, interval) {
+    d3.csv(`data/${company}.csv`, genType).then(_data => {
+        const data = _data
+        genRaw = data;
+        mainjs(interval)
+        displayLatestInfo()
+        
+        loadBollingerChart(_data)
+        console.log(_data)
+
+        const cyclePlotConfig = {
+            parentElement: '#cyclePlot',
+            containerWidth: 900,
+            containerHeight: 500,
+            margin: { top: 25, right: 20, bottom: 75, left: 50 }
+        };
+        const CandleStickConfig = {
+            parentElement: '#CandleStick',
+            containerWidth: 900,
+            containerHeight: 500,
+            margin: { top: 80, right: 20, bottom: 100, left: 100 }
+        };
+
+        d3.select('#cyclePlot svg').remove();
+        d3.select('#candleStick svg').remove();
+        const cyclePlotChart = new CyclePlot(cyclePlotConfig, data);
+        cyclePlotChart.updateVis();
+        const candleStick = new CandleStick(CandleStickConfig, data);
+        candleStick.updateVis();
+    })
+        .catch(error => console.error(error));
+}
+
+
+loadData('Amazon', 'day', 'day')
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs(interval) {
     TIntervals[TPeriod] = interval
