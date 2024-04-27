@@ -3,25 +3,23 @@ class CyclePlot {
 
     /**
      * class constructor with basic chart configuration
-     * @param {Object} _config 
-     * @param {Array} _data 
-     * @param {d3.Scale} _colorScale 
+     * @param {Object} _config
+     * @param {Array} _data
+     * @param {d3.Scale} _colorScale
      */
     constructor(_config, _data, _colorScale) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 900,
+            containerWidth: _config.containerWidth || 850,
             containerHeight: _config.containerHeight || 500,
-            margin: _config.margin || { top: 25, right: 20, bottom: 50, left: 35 }
+            margin: _config.margin || { top: 25, right: 90, bottom: 75, left: 50 }
         };
         this.data = _data;
         this.colorScale = _colorScale;
         this.initVis();
     }
 
-    /**
-     * this function is used to initialize scales/axes and append static elements
-     */
+    
     initVis() {
         let vis = this;
 
@@ -45,9 +43,6 @@ class CyclePlot {
 
     }
 
-    /**
-     * this function is used to prepare the data and update the scales before we render the actual vis
-     */
     updateVis() {
         let vis = this;
         vis.quarterlyData = d3.rollup(vis.data, v => d3.mean(v, d => d.Volume), d => {
@@ -63,41 +58,124 @@ class CyclePlot {
         vis.xScale.domain(vis.quarterlyVolumes.map(d => d.Quarter));
         vis.yScale.domain([0, maxVolumeRoundUp]).nice();
 
-
         vis.renderVis();
     }
 
-    /**
-     * this function contains the d3 code for binding data visual elements
-     */
+    
     renderVis() {
         let vis = this;
+        let hoveredQuarter;
+        let hoveredQuarterDatum;
+        let clickedPoint;
 
         vis.lineGenerator = d3.line()
             .x(d => vis.xScale(d.Quarter) + vis.xScale.bandwidth() / 2)
             .y(d => vis.yScale(d.Volume));
 
-
         const yearGroups = Array.from(d3.group(vis.data, d => d.Date.getFullYear()), ([key]) => key);
+
+        var customColors = ['#0DFF0D', '#8c564b', '#ff7f0e', '#00FFFF', '#DE00DE'];
+
         vis.colorScale = d3.scaleOrdinal()
             .domain(yearGroups)
-            .range(d3.schemeCategory10);
-
+            .range(customColors);
 
         yearGroups.forEach(year => {
             const yearData = vis.quarterlyVolumes.filter(d => d.Quarter.startsWith(year));
+
             vis.svg.append("path")
                 .datum(yearData)
                 .attr("fill", "none")
                 .attr("stroke", vis.colorScale(year))
-                .attr("stroke-width", 2)
-                .attr("d", vis.lineGenerator);
+                .attr("stroke-width", 3)
+                .attr("d", vis.lineGenerator)
+                .on("mouseover", function (event, d) {
+                    const mouseX = event.offsetX - vis.config.margin.left;
+                    const hoveredQuarterIndex = Math.floor((mouseX / vis.width) * vis.quarterlyVolumes.length);
+                    const hoveredQuarterData = vis.quarterlyVolumes[hoveredQuarterIndex];
+                    hoveredQuarter = hoveredQuarterData.Quarter;
+
+                    hoveredQuarterDatum = yearData.find(d => d.Quarter === hoveredQuarter);
+
+                     const text = vis.svg.append("text")
+                         .attr("x", vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2)
+                         .attr("y", vis.yScale(hoveredQuarterDatum.Volume) - 10) // Adjust y position as needed
+                         .attr("text-anchor", "middle")
+                         .attr("font-size", "12px")
+                         .text(`Average Volume\n: ${parseFloat(hoveredQuarterDatum.Volume.toFixed(2))}`);
+
+                    const markupX = vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2;
+                    const markupY = vis.yScale(hoveredQuarterDatum.Volume);
+                    vis.svg.append("circle")
+                        .attr("cx", markupX)
+                        .attr("cy", markupY)
+                        .attr("r", 7)
+                        .attr("fill", "red")
+                        .attr("class", "markup-point");
+
+                    vis.hoveredText = text;
+
+                })
+                .on("mouseout", function () {
+
+                    vis.svg.selectAll(".markup-point:not(.clicked-markup)").remove();
+                     if (vis.hoveredText) {
+                         vis.hoveredText.remove();
+                     }
+
+                })
+                .on("click", function () {
+
+                    if (clickedPoint) {
+                        clickedPoint.remove();
+                    }
+
+                    vis.svg.selectAll(".clicked-markup").remove();
+
+                    const markupX = vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2;
+                    const markupY = vis.yScale(hoveredQuarterDatum.Volume);
+                    clickedPoint =vis.svg.append("circle")
+                        .attr("cx", markupX)
+                        .attr("cy", markupY)
+                        .attr("r", 7)
+                        .attr("fill", "red")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 2)
+                        .attr("class", "markup-point clicked-markup");
+
+                    const selectedData = vis.data.filter(item => {
+                        const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+                        return itemQuarter === hoveredQuarter;
+                    });
+
+                    console.log("Selected quarter and year from cycle plot:", hoveredQuarter);
+                    console.log("Original data for selected quarter from cycle plot:", selectedData);
+
+
+                });
+
+                d3.select("body").on("click", function (event) {
+                    // Check if the click event target is outside of the graph area
+                    if (!vis.svg.node().contains(event.target)) {
+                        // Remove the clicked point
+                        if (clickedPoint) {
+                            clickedPoint.remove();
+                            clickedPoint = null; // Reset the clickedPoint variable
+                        }
+                    }
+                });
+
 
             const lastQuarterOfYear = `${year}-Q4`;
             const lastQuarterData = yearData.find(d => d.Quarter === lastQuarterOfYear);
+
+            const spaceBetweenLastQuarterAndLine = 15; 
+
+
             if (lastQuarterData) {
-                const lastQuarterX = vis.xScale(lastQuarterOfYear) + vis.xScale.bandwidth() / 2;
+                const lastQuarterX = vis.xScale(lastQuarterOfYear) + vis.xScale.bandwidth() / 2 + spaceBetweenLastQuarterAndLine;
                 const lastQuarterY = vis.yScale(lastQuarterData.Volume);
+
                 vis.svg.append("line")
                     .attr("x1", lastQuarterX)
                     .attr("y1", 0)
@@ -105,6 +183,7 @@ class CyclePlot {
                     .attr("y2", vis.height)
                     .attr("stroke", "gray")
                     .attr("stroke-dasharray", "5,5");
+
             }
 
         });
@@ -129,11 +208,12 @@ class CyclePlot {
 
         vis.svg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", -vis.config.margin.left)
+            .attr("y", -60)
             .attr("x", -vis.height / 2)
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Avg. Volume");
 
     }
+
 }

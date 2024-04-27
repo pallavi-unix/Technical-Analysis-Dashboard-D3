@@ -12,21 +12,17 @@ function loadBollingerChart(ksData) {
 
     console.log("ksData",ksData)
     
-
     d3.select("#chart").selectAll("*").remove();
 
     // Set the dimensions and margins of the chart
-    var margin = { top: 20, right: 20, bottom: 30, left: 50 },
+    var margin = { top: 20, right: 20, bottom: 70, left: 50 },
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
-
-
 
     // Append the SVG object to the chart div
     var svg = d3.select("#chart")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 
     // Define x scale with yearly ticks
     var xScale = d3.scaleTime()
@@ -37,7 +33,6 @@ function loadBollingerChart(ksData) {
     var yScale = d3.scaleLinear()
         .domain([0, d3.max(ksData, function (d) { return Math.max(d.High, d.Low, d.AdjClose); })])
         .range([height, 0]);
-
 
     // Define the line functions
     var lineHigh = d3.line()
@@ -71,35 +66,24 @@ function loadBollingerChart(ksData) {
         .attr("d", lineAdjClose)
         .style("stroke", "black");
 
-
-    // Define x axis with yearly tick format
-    // var xAxis = d3.axisBottom(xScale)
-    //     .ticks(d3.timeYear.every(1))
-    //     .tickFormat(d3.timeFormat("%Y"));
-
-    ///
+    // Displays x axis
     var xAxis = d3.axisBottom(xScale)
-    .tickFormat(d3.timeFormat("%b %d, %Y"));
-
-    // Define x axis with custom tick format for quarters and full dates
-
-
-
+        .ticks(d3.timeMonth.every(3))
+        .tickFormat(d3.timeFormat("%d %b '%y"))
 
     // Append x axis to the chart
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-  
-
+        .call(xAxis)
+        .selectAll("text") 
+        .style("text-anchor", "end")
+        .attr("dx", "-0.8em")
+        .attr("dy", "0.15em")
+        .attr("transform", "rotate(-45)");
 
     // Add y axis
     svg.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(yScale));
-
-
-
-
 }
