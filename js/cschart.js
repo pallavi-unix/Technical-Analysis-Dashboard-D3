@@ -46,9 +46,10 @@ Bheight = 300;
         var xAxis
         if (interval == "week"){
            //Temporary fix
-            width = 630
+            // width = 630
+            tempWidth = 630
             xAxis = d3.axisBottom(x)
-            .tickValues(x.domain().filter(function(d, i) { return !((i + Math.floor(60 / (width  / genData.length)) / 2) % Math.ceil(90 / (width  / genData.length))); }))
+            .tickValues(x.domain().filter(function(d, i) { return !((i + Math.floor(60 / (tempWidth  / genData.length)) / 2) % Math.ceil(60 / (tempWidth  / genData.length))); }))
             .tickFormat(d3.timeFormat(TFormat[interval]));
 
         }else{

@@ -3,7 +3,7 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 var TPeriod = "5Y";
 var TDays = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "4Y": 1008, "5Y": 1258 };
 var TIntervals = { "5Y": "day" };
-var TFormat = { "day": "%d %b '%y", "week": "%b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
+var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
 var genRaw, genData;
 
 
