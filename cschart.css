@@ -1,14 +1,13 @@
 /* Container
 /* =============================================== */
 #demobox {
-    /* margin: auto;  */
     min-height: 310px; 
     min-width: 700px; 
     max-width: 800px; 
     padding-left: 30px; 
     color: #333; }
 
-#csbox {
+/* #csbox {
     color: black; 
     background: white;
     margin: 10px auto; 
@@ -16,7 +15,23 @@
     height: 500px;
     font-size: small;
     text-align: left;
-  border: #292f3b; }
+  border: #292f3b; } */
+
+  #csbox {
+    color: black; 
+    background: white;
+    margin: 10px auto; 
+    width: 100%;  /* Change this from pixels to percentage */
+    height: auto; /* Make it auto to maintain aspect ratio or a specific height */
+    font-size: small;
+    text-align: left;
+    border: #292f3b;
+}
+
+
+
+  /* Container */
+
 
 /* Candlestick Chart
 /* =============================================== */

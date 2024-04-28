@@ -30,7 +30,16 @@
             {
   font-family: Verdana, sans-serif;
 }
-        
+.svg-responsive {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* aspect-ratio: 1; Uncomment if you need to maintain aspect ratio */
+}
+
+.candle-stick-height-card {
+    height: 450px;
+}
 
         
 
@@ -42,7 +51,8 @@
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid d-flex justify-content-between">
           <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="/docs/4.0/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="">
+            <!-- <a href="https://www.flaticon.com/free-icons/technical-analysis" title="technical analysis icons"></a> -->
+            <img src="/images/graph.png" width="30" height="30" alt="">
             <span class="font-text ms-2">Technical Analysis Dashboard</span>
           </a>
           <select id="company-selector" class="form-select form-select-sm w-auto font-text">
@@ -63,7 +73,7 @@
         <div class="row">
             
             <div class="col-md-6 mb-4">
-                <div class="card">
+                <div class="card candle-stick-height-card" style="margin-right: -7px ">
 
                     <div class="card-header d-flex align-items-center">
                         <div class="flex-grow-1  font-text" >
@@ -109,7 +119,7 @@
                         Cycle Plot
                     </div>
                     <div class="card-body">
-                        <svg class="mg-left" id="cyclePlot"></svg>
+                        <svg class="mg-left svg-responsive" id="cyclePlot"></svg>
                     </div>
                 </div>
             </div>
@@ -130,7 +140,7 @@
                     </div>
                     <div class="card-body">
                         <!-- <div class="mg-left" id="chart"></div> -->
-                        <svg id="chart" width="1000" height="400"></svg>
+                        <svg id="chart" class="svg-responsive" width="1000" height="400"></svg>
 
                           
                     </div>
@@ -147,6 +157,13 @@
                 </div>
             </div>
         </div>
+
+        <!--
+
+        -->
+        
+        
+
     </div>
 
       

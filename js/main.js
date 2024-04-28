@@ -3,21 +3,9 @@ var parseDate = d3.time.format("%Y-%m-%d").parse;
 var TPeriod = "5Y";
 var TDays = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "4Y": 1008, "5Y": 1258 };
 var TIntervals = { "5Y": "day" };
-var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" };
+var TFormat = { "day": "%d %b '%y", "week": "%b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
 var genRaw, genData;
 
-
-// const intervalSelector = document.getElementById('interval-selector');
-// const intervalSelectorContainer = document.getElementById('interval-selector-container');
-
-// intervalSelectorContainer.addEventListener('click', function(event) {
-//     const interval = event.target.getAttribute('value');
-//     if (interval !== null) {
-//         const company = document.getElementById('company-selector').value;
-//         loadData(company, interval);
-        
-//     }
-// });
 
 document.getElementById('interval-selector').addEventListener('change', event => {
     const interval = event.target.value;
@@ -39,16 +27,8 @@ function loadData(company, interval) {
         const data = _data
         genRaw = data;
         mainjs(interval)
-        displayLatestInfo()
-
-
-        // var compressedData = dataCompress(_data, interval);
-
-        
+        displayLatestInfo() 
         loadBollingerChart(_data)
-
-
-
         const cyclePlotConfig = {
             parentElement: '#cyclePlot',
             containerWidth: 900,
@@ -76,6 +56,35 @@ function loadData(company, interval) {
 }
 
 loadData('Amazon', 'day')
+
+window.addEventListener('resize', function() {
+    // You need to ensure that the chart re-rendering happens within the context of available data.
+    // This might require ensuring data is loaded or accessible globally.
+    d3.select('#chart1').call(cschart());
+  });
+
+
+  window.addEventListener('resize', function() {
+    // Recalculate the width based on the container size
+    var containerWidth = d3.select('#chart1').node().getBoundingClientRect().width;
+    width = containerWidth - margin.left - margin.right;
+  
+    // Reset the x scale range
+    x.range([0, width]);
+  
+    // Recalculate tick values for the new width
+
+    
+    xAxis.tickValues(x.domain().filter(function(d, i) {
+      return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
+    }));
+  
+    // Redraw the x-axis
+    d3.select('.xaxis').call(xAxis);
+    
+    // Additionally, you may need to update other chart elements that depend on the new width
+  });
+   
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs(interval) {
     TIntervals[TPeriod] = interval
@@ -152,8 +161,8 @@ function changeClass() {
     }
 }
 
-function displayCS() {
-    var chart = cschart().Bheight(440);
+function displayCS(interval) {
+    var chart = cschart(interval).Bheight(300);
     d3.select("#chart1").call(chart);
     hoverAll();
 }
