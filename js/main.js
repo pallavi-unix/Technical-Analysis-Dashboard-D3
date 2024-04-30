@@ -2,7 +2,7 @@
 var parseDate = d3.time.format("%Y-%m-%d").parse;
 var TPeriod = "5Y";
 var TDays = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "4Y": 1008, "5Y": 1258 };
-var TIntervals = { "5Y": "day" };
+var TIntervals = {"3M":"day" , "5Y": "day" };
 var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
 var genRaw, genData;
 
@@ -10,24 +10,48 @@ var genRaw, genData;
 document.getElementById('interval-selector').addEventListener('change', event => {
     const interval = event.target.value;
     const company = document.getElementById('company-selector').value;
-    loadData(company, interval);
+    loadData(company, interval , false);
+    
 });
 
 document.getElementById('company-selector').addEventListener('change', event => {
     const company = event.target.value;
     const interval = document.getElementById('interval-selector').value;
-    loadData(company, interval);
+    loadData(company, interval , false);
+    console.log("interval" , interval)
 });
 
 
+function loadCandleStick(interval){
+    mainjs(interval)
+    displayLatestInfo()
 
-function loadData(company, interval) {
+}
 
+function loadData(company, interval , cyclePlotFilter) {
+
+
+
+
+    if (cyclePlotFilter) {
+        TPeriod = '3M'
+        loadCandleStick(interval)
+    }else{
+        displayAllCharts(company , interval)
+    }
+
+
+   
+
+}
+
+
+function displayAllCharts(company , interval){
     d3.csv(`data/${company}.csv`, genType).then(_data => {
         const data = _data
         genRaw = data;
-        mainjs(interval)
-        displayLatestInfo() 
+        
+        loadCandleStick(interval)
         loadBollingerChart(_data)
         const cyclePlotConfig = {
             parentElement: '#cyclePlot',
@@ -52,10 +76,9 @@ function loadData(company, interval) {
 
     })
         .catch(error => console.error(error));
-
 }
 
-loadData('Amazon', 'day')
+loadData('Amazon', 'day' , false)
 
 window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
@@ -84,8 +107,8 @@ window.addEventListener('resize', function() {
     // d3.select('.xaxis').call(xAxis);
     
     // // Additionally, you may need to update other chart elements that depend on the new width
-    console.log("Function Called window resize")
-    loadData('Amazon' , 'day')
+    // console.log("Function Called window resize")
+    // loadData('Amazon' , 'day')
 
 
 
@@ -93,79 +116,27 @@ window.addEventListener('resize', function() {
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs(interval) {
+
+    
     TIntervals[TPeriod] = interval
+
+    if (TPeriod == "3M" ){
+        console.log("Checkkkkkk" , TPeriod,TIntervals[TPeriod] , interval)
+        console.log("GENRAW" ,genRaw)
+    }
+
+    
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
     toPress(); displayAll();
 }
 
 function displayAll() {
-    changeClass();
+
     displayCS();
     displayGen(genData.length - 1);
 }
 
-function changeClass() {
-    if (TPeriod == "1M") {
-        d3.select("#oneM").classed("active", true);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", false);
-    } else if (TPeriod == "6M") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", true);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", false);
-    } else if (TPeriod == "1Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", true);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", false);
-    } else if (TPeriod == "2Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", true);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", false);
-    } else if (TPeriod == "4Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", true);
-        d3.select("#fiveY").classed("active", false);
-    } else if (TPeriod == "5Y") {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", true);
-    }
 
-    else {
-        d3.select("#oneM").classed("active", false);
-        d3.select("#threeM").classed("active", false);
-        d3.select("#sixM").classed("active", false);
-        d3.select("#oneY").classed("active", false);
-        d3.select("#twoY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fourY").classed("active", false);
-        d3.select("#fiveY").classed("active", true);
-    }
-}
 
 function displayCS(interval) {
     var chart = cschart(interval).Bheight(300);
