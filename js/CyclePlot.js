@@ -10,8 +10,8 @@ class CyclePlot {
     constructor(_config, _data, _colorScale) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 850,
-            containerHeight: _config.containerHeight || 500,
+            containerWidth: _config.containerWidth || 900,
+            containerHeight: _config.containerHeight || 400,
             margin: _config.margin || { top: 25, right: 90, bottom: 75, left: 50 }
         };
         this.data = _data;
@@ -19,7 +19,7 @@ class CyclePlot {
         this.initVis();
     }
 
-    
+
     initVis() {
         let vis = this;
 
@@ -61,7 +61,7 @@ class CyclePlot {
         vis.renderVis();
     }
 
-    
+
     renderVis() {
         let vis = this;
         let hoveredQuarter;
@@ -80,6 +80,7 @@ class CyclePlot {
             .domain(yearGroups)
             .range(customColors);
 
+
         yearGroups.forEach(year => {
             const yearData = vis.quarterlyVolumes.filter(d => d.Quarter.startsWith(year));
 
@@ -90,6 +91,9 @@ class CyclePlot {
                 .attr("stroke-width", 3)
                 .attr("d", vis.lineGenerator)
                 .on("mouseover", function (event, d) {
+
+                    vis.svg.selectAll(".markup-point").remove();
+
                     const mouseX = event.offsetX - vis.config.margin.left;
                     const hoveredQuarterIndex = Math.floor((mouseX / vis.width) * vis.quarterlyVolumes.length);
                     const hoveredQuarterData = vis.quarterlyVolumes[hoveredQuarterIndex];
@@ -97,12 +101,12 @@ class CyclePlot {
 
                     hoveredQuarterDatum = yearData.find(d => d.Quarter === hoveredQuarter);
 
-                     const text = vis.svg.append("text")
-                         .attr("x", vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2)
-                         .attr("y", vis.yScale(hoveredQuarterDatum.Volume) - 10) // Adjust y position as needed
-                         .attr("text-anchor", "middle")
-                         .attr("font-size", "12px")
-                         .text(`Average Volume\n: ${parseFloat(hoveredQuarterDatum.Volume.toFixed(2))}`);
+                    //  const text = vis.svg.append("text")
+                    //      .attr("x", vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2)
+                    //      .attr("y", vis.yScale(hoveredQuarterDatum.Volume) - 10) // Adjust y position as needed
+                    //      .attr("text-anchor", "middle")
+                    //      .attr("font-size", "12px")
+                    //      .text(`Average Volume\n: ${parseFloat(hoveredQuarterDatum.Volume.toFixed(2))}`);
 
                     const markupX = vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2;
                     const markupY = vis.yScale(hoveredQuarterDatum.Volume);
@@ -113,63 +117,71 @@ class CyclePlot {
                         .attr("fill", "red")
                         .attr("class", "markup-point");
 
-                    vis.hoveredText = text;
+                    // vis.hoveredText = text;
 
                 })
+
+
+
                 .on("mouseout", function () {
 
-                    vis.svg.selectAll(".markup-point:not(.clicked-markup)").remove();
-                     if (vis.hoveredText) {
-                         vis.hoveredText.remove();
-                     }
+
 
                 })
                 .on("click", function () {
 
-                    if (clickedPoint) {
-                        clickedPoint.remove();
+
+
+                });
+
+            let previousClickedPoint = null;
+            let previousClickedQuarter = null;
+
+            vis.svg.on("click", function (event) {
+                const targetClass = event.target.getAttribute("class");
+                // Check if the clicked element is a markup point circle
+                if (targetClass && targetClass.includes("markup-point")) {
+                    // Get the quarter associated with the clicked point
+                    const clickedQuarter = hoveredQuarter;
+                    // Check if there was a previously clicked point and if its quarter is different from the clicked quarter
+                    
+                    if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
+                        // Remove the stroke from the previously clicked point
+                        previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
                     }
+                    // Add the clicked-markup class to the clicked point and apply stroke
+                    const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
+                        .attr("stroke", "black").attr("stroke-width", 2);
 
-                    vis.svg.selectAll(".clicked-markup").remove();
-
-                    const markupX = vis.xScale(hoveredQuarter) + vis.xScale.bandwidth() / 2;
-                    const markupY = vis.yScale(hoveredQuarterDatum.Volume);
-                    clickedPoint =vis.svg.append("circle")
-                        .attr("cx", markupX)
-                        .attr("cy", markupY)
-                        .attr("r", 7)
-                        .attr("fill", "red")
-                        .attr("stroke", "black")
-                        .attr("stroke-width", 2)
-                        .attr("class", "markup-point clicked-markup");
+                    // Store the reference to the clicked point and its quarter as the previousClickedPoint and previousClickedQuarter
+                    previousClickedPoint = clickedPoint;
+                    previousClickedQuarter = clickedQuarter;
 
                     const selectedData = vis.data.filter(item => {
                         const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
-                        return itemQuarter === hoveredQuarter;
+                        return itemQuarter === clickedQuarter;
                     });
 
-                    console.log("Selected quarter and year from cycle plot:", hoveredQuarter);
+                    console.log("Selected quarter and year from cycle plot:", clickedQuarter);
                     console.log("Original data for selected quarter from cycle plot:", selectedData);
+                }
+            });
 
 
-                });
 
-                d3.select("body").on("click", function (event) {
-                    // Check if the click event target is outside of the graph area
-                    if (!vis.svg.node().contains(event.target)) {
-                        // Remove the clicked point
-                        if (clickedPoint) {
-                            clickedPoint.remove();
-                            clickedPoint = null; // Reset the clickedPoint variable
-                        }
-                    }
-                });
+            d3.select("body").on("click", function (event) {
+                // Check if the click event target is outside of the graph area
+                if (!vis.svg.node().contains(event.target)) {
+                    // Remove all markup points
+                    vis.svg.selectAll(".markup-point").remove();
+                }
+            });
 
 
             const lastQuarterOfYear = `${year}-Q4`;
             const lastQuarterData = yearData.find(d => d.Quarter === lastQuarterOfYear);
 
-            const spaceBetweenLastQuarterAndLine = 15; 
+            const spaceBetweenLastQuarterAndLine = 15;
 
 
             if (lastQuarterData) {
