@@ -121,20 +121,10 @@ class CyclePlot {
 
                 })
 
-
-
                 .on("mouseout", function () {
-
-
-
-                     const company = document.getElementById('company-selector').value;
-                     const interval = document.getElementById('interval-selector').value;
-                     loadData(company , interval , false)
 
                 })
                 .on("click", function () {
-
-
 
                 });
 
@@ -143,21 +133,15 @@ class CyclePlot {
 
             vis.svg.on("click", function (event) {
                 const targetClass = event.target.getAttribute("class");
-                // Check if the clicked element is a markup point circle
                 if (targetClass && targetClass.includes("markup-point")) {
-                    // Get the quarter associated with the clicked point
                     const clickedQuarter = hoveredQuarter;
-                    // Check if there was a previously clicked point and if its quarter is different from the clicked quarter
                     
                     if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
-                        // Remove the stroke from the previously clicked point
                         previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
                     }
-                    // Add the clicked-markup class to the clicked point and apply stroke
                     const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
                         .attr("stroke", "black").attr("stroke-width", 2);
 
-                    // Store the reference to the clicked point and its quarter as the previousClickedPoint and previousClickedQuarter
                     previousClickedPoint = clickedPoint;
                     previousClickedQuarter = clickedQuarter;
 
@@ -168,20 +152,20 @@ class CyclePlot {
 
                     console.log("Selected quarter and year from cycle plot:", clickedQuarter);
                     console.log("Original data for selected quarter from cycle plot:", selectedData);
-                }
-            });
+
+
 
                     genRaw = selectedData
                     const company = document.getElementById('company-selector').value;
-                    const interval = document.getElementById('interval-selector').value;
+                    const interval = document.getElementById('interval-selector').value;                    
                     loadData(company , interval , true)
 
+                }
+            });
 
 
             d3.select("body").on("click", function (event) {
-                // Check if the click event target is outside of the graph area
                 if (!vis.svg.node().contains(event.target)) {
-                    // Remove all markup points
                     vis.svg.selectAll(".markup-point").remove();
                 }
             });
