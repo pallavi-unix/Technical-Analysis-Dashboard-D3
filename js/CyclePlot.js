@@ -123,6 +123,10 @@ class CyclePlot {
                          vis.hoveredText.remove();
                      }
 
+                     const company = document.getElementById('company-selector').value;
+                     const interval = document.getElementById('interval-selector').value;
+                     loadData(company , interval , false)
+
                 })
                 .on("click", function () {
 
@@ -150,6 +154,11 @@ class CyclePlot {
 
                     console.log("Selected quarter and year from cycle plot:", hoveredQuarter);
                     console.log("Original data for selected quarter from cycle plot:", selectedData);
+
+                    genRaw = selectedData
+                    const company = document.getElementById('company-selector').value;
+                    const interval = document.getElementById('interval-selector').value;
+                    loadData(company , interval , true)
 
 
                 });

@@ -10,7 +10,7 @@ function loadBollingerChart(ksData) {
         d.Volume = +d.Volume;
     });
 
-    console.log("ksData",ksData)
+
     
     d3.select("#chart").selectAll("*").remove();
 
