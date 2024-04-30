@@ -1,14 +1,13 @@
 /* Container
 /* =============================================== */
 #demobox {
-    /* margin: auto;  */
     min-height: 310px; 
     min-width: 700px; 
     max-width: 800px; 
     padding-left: 30px; 
     color: #333; }
 
-#csbox {
+/* #csbox {
     color: black; 
     background: white;
     margin: 10px auto; 
@@ -16,35 +15,51 @@
     height: 500px;
     font-size: small;
     text-align: left;
-  border: #292f3b; }
+  border: #292f3b; } */
+
+  #csbox {
+    color: black; 
+    background: white;
+    margin: 10px auto; 
+    width: 100%;  /* Change this from pixels to percentage */
+    height: auto; /* Make it auto to maintain aspect ratio or a specific height */
+    font-size: small;
+    text-align: left;
+    border: #292f3b;
+}
+
+
+
+  /* Container */
+
 
 /* Candlestick Chart
 /* =============================================== */
-#chart1 .grid { stroke-opacity: .3; }
-#chart1 .axis line,
-#chart1 .axis.xaxis path { fill: none; stroke: darkgrey; shape-rendering: crispEdges; }
-#chart1 .tick text { font: 10px sans-serif; fill: darkgrey; stroke-opacity: .3; }
-#chart1 .axis.yaxis path { fill: none; stroke: #292f3b; }
+#candle-stick-chart .grid { stroke-opacity: .3; }
+#candle-stick-chart .axis line,
+#candle-stick-chart .axis.xaxis path { fill: none; stroke: darkgrey; shape-rendering: crispEdges; }
+#candle-stick-chart .tick text { font: 10px sans-serif; fill: darkgrey; stroke-opacity: .3; }
+#candle-stick-chart .axis.yaxis path { fill: none; stroke: #292f3b; }
 
-#chart1 .bands rect { fill: darkgrey; fill-opacity: 0; stroke-opacity: 0; pointer-events: all; shape-rendering: crispEdges; }
-#chart1 .bands .hoved { fill-opacity: .6; }
-#chart1 .sticks rect { pointer-events: none; shape-rendering: crispEdges; }
-#chart1 .sticks .rise, #chart1 .candles .rise { fill: green; } 
-#chart1 .sticks .fall, #chart1 .candles .fall { fill: red; }
-#chart1 .sticks .hoved { stroke: white; }
-#chart1 .candles .hoved { stroke: white; }
-#chart1 .candles rect { pointer-events: none; shape-rendering: crispEdges; } 
+#candle-stick-chart .bands rect { fill: darkgrey; fill-opacity: 0; stroke-opacity: 0; pointer-events: all; shape-rendering: crispEdges; }
+#candle-stick-chart .bands .hoved { fill-opacity: .6; }
+#candle-stick-chart .sticks rect { pointer-events: none; shape-rendering: crispEdges; }
+#candle-stick-chart .sticks .rise, #candle-stick-chart .candles .rise { fill: green; } 
+#candle-stick-chart .sticks .fall, #candle-stick-chart .candles .fall { fill: red; }
+#candle-stick-chart .sticks .hoved { stroke: white; }
+#candle-stick-chart .candles .hoved { stroke: white; }
+#candle-stick-chart .candles rect { pointer-events: none; shape-rendering: crispEdges; } 
 
-#chart1 .bbmn { fill: none; stroke: cyan; stroke-width: 1.5px; pointer-events: none; }
-#chart1 .bbup { fill: none; stroke: green; stroke-width: 1.5px; pointer-events: none; }
-#chart1 .bbdn { fill: none; stroke: crimson; stroke-width: 1.5px; pointer-events: none; } */
+#candle-stick-chart .bbmn { fill: none; stroke: cyan; stroke-width: 1.5px; pointer-events: none; }
+#candle-stick-chart .bbup { fill: none; stroke: green; stroke-width: 1.5px; pointer-events: none; }
+#candle-stick-chart .bbdn { fill: none; stroke: crimson; stroke-width: 1.5px; pointer-events: none; } */
 
-#chart1 .volumebar { fill: darkgrey; } 
-#chart1 .volumebar rect { pointer-events: none; }
-#chart1 .volumebar .hoved { fill: white; }
-#chart1 .sigmabar { fill: darkgrey; } 
-#chart1 .sigmabar rect { pointer-events: none; }
-#chart1 .sigmabar .hoved { fill: white; } */
+#candle-stick-chart .volumebar { fill: darkgrey; } 
+#candle-stick-chart .volumebar rect { pointer-events: none; }
+#candle-stick-chart .volumebar .hoved { fill: white; }
+#candle-stick-chart .sigmabar { fill: darkgrey; } 
+#candle-stick-chart .sigmabar rect { pointer-events: none; }
+#candle-stick-chart .sigmabar .hoved { fill: white; } */
 
 #option    { width: 230px; height: 25px; float: left; padding-top: 5px; }
 #option input { cursor: pointer; border-radius: 5px; color: #fff; background: #696d75; border: none; }
@@ -60,8 +75,8 @@
                 box-shadow: none;
               }
 #infobar   { width: 600px; height: 25px; float: left; padding-top: 5px; text-align: left; font-family: sans-serif; }
-.infohead  { width: 140px; height: 25px; margin: 0px 2px; float: left; }
-.infobox   { width: 100px; height: 30px; margin: 0px 2px; float: left; }
+.infohead  { width: 200px; height: 25px; margin: 0px 2px; float: left; }
+.infobox   { width: 110px; height: 30px; margin: 0px 2px; float: left; }
 
 #volchart .volbar .volfill { fill: crimson; } 
 #volchart .sigbar .sigfill { fill: crimson; } 

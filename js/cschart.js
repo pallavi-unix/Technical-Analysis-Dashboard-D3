@@ -1,17 +1,34 @@
 function cschart() {
-  var margin = { top: 0, right: 50, bottom: 40, left: 0 },
-      width = 780,
-      height = 440,
-   Bheight = 440;
-// var containerWidth = document.getElementById('chart1').getBoundingClientRect().width;
-// var margin = {top: 20, right: 20, bottom: 30, left: 40};
-// var width = containerWidth - margin.left - margin.right;
-// var height = 380; // Or set this dynamically as well
-//     //   Bheight = 440;
-//     Bheight = 380
+//   var margin = { top: 0, right: 50, bottom: 40, left: 0 },
+//       width = 780,
+//       height = 440,
+//    Bheight = 440;
+
+
+var margin = { top: 0, right: 50, bottom: 40, left: 0 },
+width = 780, // This might be dynamic
+height = 300, // Maintain aspect ratio if needed
+Bheight = 300;
+
 
   function csrender(selection) {
       selection.each(function() {
+
+        ///
+        var containerWidth = this.getBoundingClientRect().width;
+
+        var divid = this.getBoundingClientRect.divid
+
+        console.log("divid" , divid)
+
+        var containerHeight = this.getBoundingClientRect().height
+
+        console.log('container height' , containerHeight)
+        console.log("container width" ,containerWidth)
+        width = containerWidth - margin.left - margin.right;  // Set width based on container size
+       
+///
+
           var interval = TIntervals[TPeriod];
 
           var minimal = d3.min(genData, function(d) { return d.LOW; });
@@ -19,7 +36,12 @@ function cschart() {
 
           var extRight = width + margin.right;
 
-          var x = d3.scaleBand()
+        //   var x = d3.scaleBand()
+        //       .range([0, width])
+        //       .padding(0.1)
+        //       .domain(genData.map(function(d) { return d.TIMESTAMP; }));
+
+        var x = d3.scaleBand()
               .range([0, width])
               .padding(0.1)
               .domain(genData.map(function(d) { return d.TIMESTAMP; }));
@@ -28,20 +50,44 @@ function cschart() {
               .range([height, 0])
               .domain([minimal, maximal]).nice();
 
-          var xAxis = d3.axisBottom(x)
-              .tickValues(x.domain().filter(function(d, i) { return !((i + Math.floor(60 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
-              .tickFormat(d3.timeFormat(TFormat[interval]));
+        
+            
+        var xAxis
+        if (interval == "week"){
+           //Temporary fix
+            // width = 630
+            tempWidth = 630
+            xAxis = d3.axisBottom(x)
+            .tickValues(x.domain().filter(function(d, i) { return !((i + Math.floor(60 / (tempWidth  / genData.length)) / 2) % Math.ceil(60 / (tempWidth  / genData.length))); }))
+            .tickFormat(d3.timeFormat(TFormat[interval]));
 
+        }else{
+
+            
+            xAxis = d3.axisBottom(x)
+            .tickValues(x.domain().filter(function(d, i) { return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
+            .tickFormat(d3.timeFormat(TFormat[interval]));
+
+        }
+          
           var yAxis = d3.axisRight(y)
               .ticks(Math.floor(height / 50));
 
-        console.log("width " , width + margin.left + margin.right)
+       
           d3.select(this).select("svg").remove();
+
+
           var svg = d3.select(this).append("svg")
               .attr("width", width + margin.left + margin.right)
               .attr("height", Bheight + margin.top + margin.bottom)
               .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // var svg = d3.select(this).append("svg")
+        // .attr("width", width + margin.left + margin.right)
+        // .attr("height", Bheight + margin.top + margin.bottom)
+        // .append("g")
+        // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
           svg.append("g")
               .attr("class", "axis xaxis")

@@ -16,7 +16,8 @@
         }
 
         .chart-container {
-            margin-bottom: 20px;   }
+            margin-bottom: 20px;   
+        }
 
         .mg-left{
             margin-left: 6%;
@@ -26,113 +27,125 @@
             margin-left: 15px;
         }
 
-        
+        .font-text {
+            font-family: Verdana, sans-serif;
+        }
 
-        
+        .svg-responsive {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .candle-stick-height-card {
+            height: 450px;
+        }
+
+        /* Adjust padding for content */
+        .content {
+            padding-top: 56px; /* Height of fixed navbar */
+        }
     </style>
 </head>
 <body>
 
-   
-      <h2 style="text-align: center;">Technical Analysis Dashboard</h2>
-      <select id="company-selector">
-        <option value="Amazon" selected>Amazon</option>
-        <option value="Google">Google</option>
-        <option value="Apple">Apple</option>
-      </select>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid d-flex justify-content-between">
+          <a class="navbar-brand d-flex align-items-center" href="#">
+            <!-- <a href="https://www.flaticon.com/free-icons/technical-analysis" title="technical analysis icons"></a> -->
+            <img src="/images/graph.png" width="30" height="30" alt="">
+            <span class="font-text ms-2">Technical Analysis Dashboard</span>
+          </a>
+          <select id="company-selector" class="form-select form-select-sm w-auto font-text">
+            <option value="Amazon" selected>Amazon</option>
+            <option value="Google">Google</option>
+            <option value="Apple">Apple</option>
+          </select>
+        </div>
+    </nav> 
 
-    
-
-      
- 
-    <div class="container-fluid mt-3">
+    <div class="container-fluid mt-3 content"> <!-- Add 'content' class to adjust padding -->
         <div class="row">
             
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        Candlestick Chart
+                <div class="card candle-stick-height-card" style="margin-right: -7px ">
 
-                        <select id="interval-selector">
-                            <option value="day" selected>Daily</option>
-                            <option value="week">Weekly</option>
-                            <option value="quarter">Quarterly</option>
-                            <option value="month">Monthly</option>
-                            
-                          
-                          </select>
-                        <div>
-                           SMA
-<label class =  "mg-left-SMA"><input  type="checkbox" id="sma20" onchange="updateSMA()" checked> 20-Day</label>
-<label><input type="checkbox" id="sma30" onchange="updateSMA()"> 30-Day </label>
-<label><input type="checkbox" id="sma50" onchange="updateSMA()"> 50-Day</label>
-<label><input type="checkbox" id="sma100" onchange="updateSMA()"> 100-Day </label>
-
-<label><input type="checkbox" id="sma200" onchange="updateSMA()"> 200-Day</label>
-
+                    <div class="card-header d-flex align-items-center">
+                        <div class="flex-grow-1  font-text" >
+                           Candlestick Chart
                         </div>
-                          
-                          
+                        <select id="interval-selector" class="form-select form-select-sm w-auto font-text" aria-label="Small select example">
+                            <option value="day" selected class="font-text">Daily</option>
+                            <option value="week" class="font-text">Weekly</option>
+                            <option value="quarter" class="font-text">Quarterly</option>
+                            <option value="month" class="font-text">Monthly</option>
+                        </select>
                     </div>
-                    <div class="card-body">
-                        <!-- <div class="mg-left" id="candlestick"></div> -->
-
+                
+                    <div class="card-body" >
                         <div id="demobox">
                             <div id="csbox">
                                 <div id="option">
-                        
-                                   
                                 </div>
-                                <div id="infobar">
-                                    <div id="infodate" class="infohead"></div>
-                                    <div id="infoopen" class="infobox"></div>
-                                    <div id="infohigh" class="infobox"></div>
-                                    <div id="infolow" class="infobox"></div>
-                                    <div id="infoclose" class="infobox"></div>
+                                <div id="infobar ">
+                                    <div id="infodate" class="infohead font-text"></div>
+                                    <div id="infoopen" class="infobox font-text"></div>
+                                    <div id="infohigh" class="infobox font-text"></div>
+                                    <div id="infolow" class="infobox font-text"></div>
+                                    <div id="infoclose" class="infobox font-text"></div>
                                 </div>
-                                <div id="chart1"></div>
+                                <div id="candle-stick-chart"></div>
                             </div> <!-- csbox -->
                         </div> <!-- demobox -->
-
-
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        Cycle Plot
+                <div class="card candle-stick-height-card">
+                    <div class="card-header d-flex align-items-center">
+                        <div class="flex-grow-1  font-text" >
+                           Cycle Plot
+                        </div>
+
                     </div>
                     <div class="card-body">
-                        <svg class="mg-left" id="cyclePlot"></svg>
+                        <svg class="mg-left svg-responsive" id="cyclePlot"></svg>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-           
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        Bollinger Bands
-                        <select id="interval-selector-bollinger">
-                            <option value="day">Daily</option>
-                            <option value="week">Weekly</option>
-                            <option value="month">Monthly</option>
-                        </select> 
+                <div class="card candle-stick-height-card">
+                    <div class="card-header d-flex align-items-center">
+                        <div class="flex-grow-1  font-text" >
+                            Bollinger Bands
+                        </div>
+                        <select id="interval-selector-bollinger" class="form-select form-select-sm w-auto font-text" aria-label="Small select example">
+                            <option value="day" selected class="font-text">Daily</option>
+                            <option value="week" class="font-text">Weekly</option>
+                            <option value="quarter" class="font-text">Quarterly</option>
+                            <option value="month" class="font-text">Monthly</option>
+                        </select>
                     </div>
+                   
                     <div class="card-body">
-                        <!-- <div class="mg-left" id="chart"></div> -->
-                        <svg id="chart" width="1000" height="400"></svg>
-
-                          
+                        <svg id="chart" class="svg-responsive" width="1000" height="400"></svg>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                       Volumn Bar Chart
+                <div class="card candle-stick-height-card">
+                    <div class="card-header d-flex align-items-center">
+                        <div class="flex-grow-1  font-text" >
+                            Volumn Chart
+                        </div>
+                        <select id="interval-selector-volumn" class="form-select form-select-sm w-auto font-text" aria-label="Small select example">
+                            <option value="day" selected class="font-text">Daily</option>
+                            <option value="week" class="font-text">Weekly</option>
+                            <option value="quarter" class="font-text">Quarterly</option>
+                            <option value="month" class="font-text">Monthly</option>
+                        </select>
                     </div>
                     <div class="card-body">
                         <div id="volumnBarChart"></div>
@@ -140,24 +153,22 @@
                 </div>
             </div>
         </div>
+
     </div>
 
-      
     <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-
     <script src="js/d3.v7.min.js" charset="utf-8"></script>   
     <script src="//d3js.org/d3-queue.v3.min.js"></script>
     <script src="//d3js.org/topojson.v1.min.js"></script>
-    <script src = "js/CandleStick.js"></script>
-    <script src = "js/cschart.js"></script>
-    <script src = "js/csheader.js"></script>
-    <script src = "js/BollingerBandChart.js"></script>
-    <script  src = "js/CyclePlot.js"></script>
-    <script  src = "js/VolumnBarChart.js"></script>
+    <script src="js/CandleStick.js"></script>
+    <script src="js/cschart.js"></script>
+    <script src="js/csheader.js"></script>
+    <script src="js/BollingerBandChart.js"></script>
+    <script src="js/CyclePlot.js"></script>
+    <script src="js/VolumnBarChart.js"></script>
     <script src="js/csbars.js"></script>
     <script src="js/csdataprep.js"></script>
     <script src="js/main.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

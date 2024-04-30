@@ -3,7 +3,7 @@
 body {
     font-family: "Oswald", sans-serif;
     font-size: 13px;
-    padding: 30px;
+    /* padding: 30px; */
     background: #f7f7f7;
 }
 
@@ -28,7 +28,7 @@ h1 {
 }
 
 @media (max-width: 768px) {
-#chart1 {
+#candle-stick-chart {
     width: 100%; /* Or use any percentage value */
     /* other styles */
 }
