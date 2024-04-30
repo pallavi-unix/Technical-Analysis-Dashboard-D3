@@ -60,29 +60,35 @@ loadData('Amazon', 'day')
 window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
     // This might require ensuring data is loaded or accessible globally.
-    d3.select('#chart1').call(cschart());
+    d3.select('#candle-stick-chart').call(cschart());
   });
 
 
   window.addEventListener('resize', function() {
-    // Recalculate the width based on the container size
-    var containerWidth = d3.select('#chart1').node().getBoundingClientRect().width;
-    width = containerWidth - margin.left - margin.right;
+    // // Recalculate the width based on the container size
+    // var margin = { top: 0, right: 50, bottom: 40, left: 0 }
+    // var containerWidth = d3.select('#candle-stick-chart').node().getBoundingClientRect().width;
+    // width = containerWidth - margin.left - margin.right;
   
-    // Reset the x scale range
-    x.range([0, width]);
+    // // Reset the x scale range
+    // x.range([0, width]);
   
-    // Recalculate tick values for the new width
+    // // Recalculate tick values for the new width
 
     
-    xAxis.tickValues(x.domain().filter(function(d, i) {
-      return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
-    }));
+    // xAxis.tickValues(x.domain().filter(function(d, i) {
+    //   return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
+    // }));
   
-    // Redraw the x-axis
-    d3.select('.xaxis').call(xAxis);
+    // // Redraw the x-axis
+    // d3.select('.xaxis').call(xAxis);
     
-    // Additionally, you may need to update other chart elements that depend on the new width
+    // // Additionally, you may need to update other chart elements that depend on the new width
+    console.log("Function Called window resize")
+    loadData('Amazon' , 'day')
+
+
+
   });
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
@@ -163,59 +169,13 @@ function changeClass() {
 
 function displayCS(interval) {
     var chart = cschart(interval).Bheight(300);
-    d3.select("#chart1").call(chart);
+    d3.select("#candle-stick-chart").call(chart);
     hoverAll();
 }
 
 
-
-
-
-
-
-
-// function hoverAll() {
-//     d3.select("#chart1").select(".bands").selectAll("rect")
-//         .on("mouseover", function (d, i) {
-//             d3.select(this).classed("hoved", true);
-//             d3.selectAll(".stick").filter(function (_, index) { return index === i; }).classed("hoved", true);
-//             d3.selectAll(".candle").filter(function (_, index) { return index === i; }).classed("hoved", true);
-//             d3.selectAll(".volume").filter(function (_, index) { return index === i; }).classed("hoved", true);
-//             d3.selectAll(".sigma").filter(function (_, index) { return index === i; }).classed("hoved", true);
-//             var ohlcData = i;
-//             // Update the infoboxes with OHLC data
-//             d3.select("#infodate").text(ohlcData.TIMESTAMP);
-//             d3.select("#infoopen").text(ohlcData.OPEN);
-//             d3.select("#infohigh").text(ohlcData.HIGH);
-//             d3.select("#infolow").text(ohlcData.LOW);
-//             d3.select("#infoclose").text(ohlcData.CLOSE);
-
-//             // Call the displayGen function with the hovered index
-//             displayGen(i);
-//         })
-//         .on("mouseout", function (d, i) {
-//             d3.select(this).classed("hoved", false);
-//             d3.selectAll(".stick").filter(function (_, index) { return index === i; }).classed("hoved", false);
-//             d3.selectAll(".candle").filter(function (_, index) { return index === i; }).classed("hoved", false);
-//             d3.selectAll(".volume").filter(function (_, index) { return index === i; }).classed("hoved", false);
-//             d3.selectAll(".sigma").filter(function (_, index) { return index === i; }).classed("hoved", false);
-
-//             // Reset the infoboxes to default text
-//             d3.select("#infodate").text("");
-//             d3.select("#infoopen").text("");
-//             d3.select("#infohigh").text("");
-//             d3.select("#infolow").text("");
-//             d3.select("#infoclose").text("");
-
-//             // Call the displayGen function with the last index
-//             displayGen(genData.length - 1);
-//         });
-// }
-
-
-
 function hoverAll() {
-    d3.select("#chart1").select(".bands").selectAll("rect")
+    d3.select("#candle-stick-chart").select(".bands").selectAll("rect")
         .on("mouseover", function(event, d) {
             // Add hovered class to current element
             d3.select(this).classed("hoved", true);
@@ -244,13 +204,7 @@ function hoverAll() {
         });
 }
 
-// function updateInfoBox(d) {
-//     d3.select("#infodate").text("Date : "+d.TIMESTAMP);
-//     d3.select("#infoopen").text("Open : "+d.OPEN);
-//     d3.select("#infohigh").text("High : "+d.HIGH);
-//     d3.select("#infolow").text("Low : "+d.LOW);
-//     d3.select("#infoclose").text("Close : "+d.CLOSE);
-// }
+
 
 function updateInfoBox(d) {
     // Format the date
@@ -273,13 +227,6 @@ function updateInfoBox(d) {
 }
 
 
-// function clearInfoBox() {
-//     d3.select("#infodate").text("");
-//     d3.select("#infoopen").text("");
-//     d3.select("#infohigh").text("");
-//     d3.select("#infolow").text("");
-//     d3.select("#infoclose").text("");
-// }
 
 
 function displayLatestInfo() {

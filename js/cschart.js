@@ -16,6 +16,15 @@ Bheight = 300;
 
         ///
         var containerWidth = this.getBoundingClientRect().width;
+
+        var divid = this.getBoundingClientRect.divid
+
+        console.log("divid" , divid)
+
+        var containerHeight = this.getBoundingClientRect().height
+
+        console.log('container height' , containerHeight)
+        console.log("container width" ,containerWidth)
         width = containerWidth - margin.left - margin.right;  // Set width based on container size
        
 ///
