@@ -44,16 +44,24 @@ class VolumnBarChart {
 
 
         // Define the time interval based on the input parameter
-        let timeInterval;
+        let timeInterval, tickFormat;
+
         switch (volumn_interval) {
             case 'month':
                 timeInterval = d3.timeMonth;
+                tickFormat = d3.timeFormat('%b %Y');
                 break;
             case 'quarter':
                 timeInterval = d3.timeMonth.every(3);
+                tickFormat = d => {
+                    const date = new Date(d);
+                    const quarter = Math.ceil((date.getMonth() + 1) / 3);
+                    return `Q${quarter} ${date.getFullYear()}`;
+                };
                 break;
             case 'week':
                 timeInterval = d3.timeWeek;
+                tickFormat = d3.timeFormat('%b %d, %Y');
                 break;
             case 'day':
                 timeInterval = d3.timeFormat('%Y-%m-%d')
@@ -92,15 +100,33 @@ class VolumnBarChart {
             .nice()
             .range([vis.height, 0]);
 
-        vis.xAxisCall = d3.axisBottom(vis.xScale)
-            .tickValues(vis.dailyVolumes.filter((d, i) => i % 30 === 0).map(d => d.Date))
-            .tickFormat(d3.timeFormat('%b %Y'));
+        // vis.xAxisCall = d3.axisBottom(vis.xScale)
+        //     .tickValues(vis.dailyVolumes.filter((d, i) => i % 30 === 0).map(d => d.Date))
+        //     .tickFormat(d3.timeFormat('%b %Y'));
 
+        if(volumn_interval == "day" || volumn_interval == "week")
+        {
+            vis.xAxisCall = d3.axisBottom(vis.xScale)
+                .tickValues(vis.dailyVolumes.filter((d, i) => i % 30 === 0).map(d => d.Date))
+                .tickFormat(d3.timeFormat('%b %Y'));
+        }
+        else{
+            vis.xAxisCall = d3.axisBottom(vis.xScale)
+                .tickValues(vis.dailyVolumes.map(d => d.Date))
+                .tickFormat(tickFormat);
+        }
+        
 
         // vis.xAxisCall = d3.axisBottom(vis.xScale)
-        //     .tickValues(vis.dailyVolumes.filter((d, i) => i % (volumn_interval === 'month' ? 1 : 4) === 0).map(d => d.Date))
-        //     .tickFormat(d3.timeFormat(volumn_interval === 'quarter' ? '%b %Y' : '%b %d, %Y'));
-
+        // .tickValues(vis.dailyVolumes.map(d => d.Date))
+        // .tickFormat((d, i) => {
+        //     // For 'month' interval, display the tick only for the first day of the month
+        //     if (volume_interval === 'month' && d.getDate() !== 1) {
+        //         return '';
+        //     }
+        //     return tickFormat(d);
+        // });
+       
 
         vis.renderVis();
     }
@@ -118,12 +144,13 @@ class VolumnBarChart {
             .attr('height', d => vis.height - vis.yScale(d.Volume))
             .attr('fill', 'steelblue');
 
+        // x-axis lables
         vis.chart.append('g')
             .attr('class', 'x-axis')
             .attr('transform', `translate(0,${vis.height})`)
             .call(vis.xAxisCall)
             .selectAll('text')
-            .attr('transform', 'rotate(-90)')
+            .attr('transform', 'rotate(-60)')
             .attr('text-anchor', 'end')
             .attr('dx', '-0.5em')
             .attr('dy', '0.5em')
