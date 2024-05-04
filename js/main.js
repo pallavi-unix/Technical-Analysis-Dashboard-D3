@@ -10,15 +10,36 @@ var genRaw, genData;
 document.getElementById('interval-selector').addEventListener('change', event => {
     const interval = event.target.value;
     const company = document.getElementById('company-selector').value;
-    loadData(company, interval , false);
+    loadData(company, interval , false , 'day');
     
 });
 
 document.getElementById('company-selector').addEventListener('change', event => {
     const company = event.target.value;
     const interval = document.getElementById('interval-selector').value;
-    loadData(company, interval , false);
+    loadData(company, interval , false ,'day');
     console.log("interval" , interval)
+});
+
+
+
+
+document.getElementById('interval-selector-bollinger').addEventListener('change', event => {
+    const company = document.getElementById('company-selector').value;
+    const bollinger_interval = document.getElementById('interval-selector-bollinger').value;
+    const interval = document.getElementById('interval-selector').value;
+    loadData(company, interval , false ,bollinger_interval);
+});
+
+
+document.getElementById('interval-selector-volumn').addEventListener('change', event => {
+    const company = document.getElementById('company-selector').value;
+    const bollinger_interval = document.getElementById('interval-selector-bollinger').value;
+    const volumn_interval = document.getElementById('interval-selector-volumn').value;
+    const interval = document.getElementById('interval-selector').value;
+
+    console.log("Volumn BKL" , company , volumn_interval , interval)
+    loadData(company, interval , false ,bollinger_interval , volumn_interval);
 });
 
 
@@ -28,31 +49,23 @@ function loadCandleStick(interval){
 
 }
 
-function loadData(company, interval , cyclePlotFilter) {
-
-
-
-
+function loadData(company, interval , cyclePlotFilter , bollinger_interval , volumn_interval = 'day') {
     if (cyclePlotFilter) {
         TPeriod = '3M'
         loadCandleStick(interval)
     }else{
-        displayAllCharts(company , interval)
+        console.log("Display chart fiunctipon" , volumn_interval)
+        displayAllCharts(company , interval ,bollinger_interval , volumn_interval)
     }
-
-
-   
-
 }
 
 
-function displayAllCharts(company , interval){
+function displayAllCharts(company , interval ,bollinger_interval , volumn_interval = 'day'){
     d3.csv(`data/${company}.csv`, genType).then(_data => {
         const data = _data
         genRaw = data;
-        
         loadCandleStick(interval)
-        loadBollingerChart(_data)
+        loadBollingerChart(_data , bollinger_interval)
         const cyclePlotConfig = {
             parentElement: '#cyclePlot',
             containerWidth: 900,
@@ -68,10 +81,14 @@ function displayAllCharts(company , interval){
 
         d3.select('#cyclePlot svg').remove();
         d3.select('#volumnBarChart svg').remove();
+
+
         const cyclePlotChart = new CyclePlot(cyclePlotConfig, data);
         cyclePlotChart.updateVis();
+
+        console.log("Pallavi" , volumn_interval)
         const volumnBarChart = new VolumnBarChart(volumnBarChartConfig, data);
-        volumnBarChart.updateVis();
+        volumnBarChart.updateVis(volumn_interval);
 
 
     })
