@@ -1,5 +1,8 @@
-function loadBollingerChart(ksData) {
+function loadBollingerChart(ksData , interval = 'day') {
 
+
+    
+    
     ksData.forEach(function (d) {
         d.Date = d.Date;
         d.Open = +d.Open;
@@ -11,7 +14,13 @@ function loadBollingerChart(ksData) {
     });
 
 
+    // ksData = aggregateData(ksData, interval);
+
+    console.log("interval" ,ksData ,  interval)
+
     
+
+    // ksData = aggregateData(ksData, interval); 
     d3.select("#chart").selectAll("*").remove();
 
     // Set the dimensions and margins of the chart
@@ -86,4 +95,38 @@ function loadBollingerChart(ksData) {
     svg.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(yScale));
+}
+
+
+function aggregateData(data, interval) {
+    var parseDate = d3.timeParse("%a %b %d %Y %H:%M:%S GMT-0500 (Eastern Standard Time)");
+    data.forEach(d => d.Date = parseDate(d.Date)); // Parse date for consistency
+
+    if (interval !== "day") {
+        var timeInterval = d3.timeDay;
+        switch (interval) {
+            case "week":
+                timeInterval = d3.timeSunday;
+                break;
+            case "month":
+                timeInterval = d3.timeMonth;
+                break;
+            case "quarter":
+                timeInterval = d3.timeMonth.every(3);
+                break;
+        }
+
+        data = d3.rollups(data,
+            g => ({
+                Open: g[0].Open, // Open of first day in the period
+                High: d3.max(g, d => d.High), // Max high in the period
+                Low: d3.min(g, d => d.Low), // Min low in the period
+                Close: g[g.length - 1].Close, // Close of last day in the period
+                AdjClose: d3.mean(g, d => d.AdjClose), // Average adjusted close in the period
+                Date: g[0].Date // Date of the first entry in the period
+            }),
+            d => timeInterval.floor(d.Date)
+        ).map(d => d[1]); // map to get values only
+    }
+    return data;
 }
