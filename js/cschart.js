@@ -1,10 +1,11 @@
-function cschart() {
+
+function cschart(sma20 = false , sma60 = false, sma100 = false) {
     //   var margin = { top: 0, right: 50, bottom: 40, left: 0 },
     //       width = 780,
     //       height = 440,
     //    Bheight = 440;
 
-
+  
     var margin = { top: 0, right: 50, bottom: 40, left: 0 },
         width = 780, // This might be dynamic
         height = 300, // Maintain aspect ratio if needed
@@ -19,12 +20,10 @@ function cschart() {
 
             var divid = this.getBoundingClientRect.divid
 
-            // console.log("divid" , divid)
-
+         
             var containerHeight = this.getBoundingClientRect().height
 
-            // console.log('container height' , containerHeight)
-            // console.log("container width" ,containerWidth)
+          
             width = containerWidth - margin.left - margin.right;  // Set width based on container size
 
             ///
@@ -36,10 +35,7 @@ function cschart() {
 
             var extRight = width + margin.right;
 
-            //   var x = d3.scaleBand()
-            //       .range([0, width])
-            //       .padding(0.1)
-            //       .domain(genData.map(function(d) { return d.TIMESTAMP; }));
+          
 
             var x = d3.scaleBand()
                 .range([0, width])
@@ -83,11 +79,7 @@ function cschart() {
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            // var svg = d3.select(this).append("svg")
-            // .attr("width", width + margin.left + margin.right)
-            // .attr("height", Bheight + margin.top + margin.bottom)
-            // .append("g")
-            // .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
 
             svg.append("g")
                 .attr("class", "axis xaxis")
@@ -159,61 +151,78 @@ function cschart() {
                 .classed("fall", function (d) { return (d.OPEN > d.CLOSE); });
 
 
-            ///
+            // 20 moving average
 
-            // Calculate moving average data
-            var movingAverageData = calculateMovingAverage(genData, 10); // Adjust the window size as needed
-
-            // Plot moving average line
+            if (sma20){
+                var movingAverageData20 = calculateMovingAverage(genData, 20); // Adjust the window size as needed
             var line = d3.line()
                 .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
                 .y(function (d) { return y(d.value); });
-
             svg.append("path")
-                .datum(movingAverageData)
+                .datum(movingAverageData20)
                 .attr("class", "moving-average-line")
                 .style("fill", "none")
-                .style("stroke", "cyan") // Change color as needed
-                .style("stroke-width", 1)
+                .style("stroke", "#2B65EC") // Change color as needed
+                .style("stroke-width", 1.5)
                 .attr("d", line);
-            //
-            //// 60 day moving average
-            // Calculate moving average data
-        var movingAverageData1 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
 
-        // Plot moving average line
-        var line = d3.line()
-            .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
-            .y(function(d) { return y(d.value); });
+            }
+            
 
-        svg.append("path")
-            .datum(movingAverageData1)
-            .attr("class", "moving-average-line1")
-            .style("fill", "none")
-            .style("stroke", "magenta") // Change color as needed
-            .style("stroke-width", 1)
-            .attr("d", line);
+            if (sma60){
+// 60 day moving average
+           
+var movingAverageData60 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
+// Plot moving average line
+var line = d3.line()
+    .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
+    .y(function(d) { return y(d.value); });
+svg.append("path")
+    .datum(movingAverageData60)
+    .attr("class", "moving-average-line1")
+    .style("fill", "none")
+    .style("stroke", "#93E9BE") // Change color as needed
+    .style("stroke-width", 1.5)
+    .attr("d", line);
+            }
 
 
-            var movingAverageData2 = calculateMovingAverage(genData, 100); // Adjust the window size as needed
+            if (sma100) {
+                var movingAverageData100 = calculateMovingAverage(genData, 100); // Adjust the window size as needed
 
-            // Plot moving average line
-            var line = d3.line()
-                .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
-                .y(function(d) { return y(d.value); });
+                // Plot moving average line
+                var line = d3.line()
+                    .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
+                    .y(function(d) { return y(d.value); });
+        
+                svg.append("path")
+                    .datum(movingAverageData100)
+                    .attr("class", "moving-average-line2")
+                    .style("fill", "none")
+                    .style("stroke", "orange") // Change color as needed
+                    .style("stroke-width", 1)
+                    .attr("d", line);
     
-            svg.append("path")
-                .datum(movingAverageData2)
-                .attr("class", "moving-average-line2")
-                .style("fill", "none")
-                .style("stroke", "orange") // Change color as needed
-                .style("stroke-width", 1)
-                .attr("d", line);
+            }
+    
+            
+           
+
+        
+
+     
+   
+
 
 
 
         });
     } // csrender
+
+
+   
+
+
 
     csrender.Bheight = function (value) {
         if (!arguments.length) return Bheight;
@@ -223,6 +232,9 @@ function cschart() {
 
     return csrender;
 } // cschart
+
+
+
 
 // Assuming genData is your data array and it's properly formatted and sorted
 function calculateMovingAverage(data, windowSize) {

@@ -6,30 +6,40 @@ var TIntervals = {"3M":"day" , "5Y": "day" };
 var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
 var genRaw, genData;
 
+var sma20 = false
+var sma60 = false
+var sma100 = false
+
 
 document.getElementById('sma20').addEventListener('change', function() {
     if (this.checked) {
-        // // Code to add SMA 20 line to the chart
-        // addSMA(20);
+        displayCS( true , false,  false)
+
     } else {
-        // // Code to remove SMA 20 line from the chart
-        // removeSMA(20);
+        displayCS( false , false,  false)
+       
     }
 });
 
 document.getElementById('sma50').addEventListener('change', function() {
     if (this.checked) {
-        // addSMA(50);
+        displayCS( false , true,  false)
+       
     } else {
-        // removeSMA(50);
+        displayCS( false , false,  false)
+        
     }
 });
 
 document.getElementById('sma100').addEventListener('change', function() {
     if (this.checked) {
-        // addSMA(100);
+       
+        displayCS( false , false,  true)
+       
     } else {
-        // removeSMA(100);
+
+        displayCS( false , false,  false)
+       
     }
 });
 
@@ -164,10 +174,10 @@ function mainjs(interval) {
     
     TIntervals[TPeriod] = interval
 
-    if (TPeriod == "3M" ){
-        console.log("Checkkkkkk" , TPeriod,TIntervals[TPeriod] , interval)
-        console.log("GENRAW" ,genRaw)
-    }
+    // if (TPeriod == "3M" ){
+    //     console.log("Checkkkkkk" , TPeriod,TIntervals[TPeriod] , interval)
+    //     console.log("GENRAW" ,genRaw)
+    // }
 
     
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
@@ -181,8 +191,8 @@ function displayAll() {
 
 
 
-function displayCS(interval) {
-    var chart = cschart(interval).Bheight(300);
+function displayCS(sma20 = false , sma60 = false, sma100 = false) {
+    var chart = cschart(sma20, sma60, sma100).Bheight(300);
     d3.select("#candle-stick-chart").call(chart);
     hoverAll();
 }
