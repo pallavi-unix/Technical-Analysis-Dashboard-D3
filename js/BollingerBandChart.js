@@ -1,10 +1,7 @@
-function loadBollingerChart(ksData , interval = 'day') {
-
-
-    
-    
+function loadBollingerChart(ksData, interval = 'day') {
+    // Parsing the date input as a date object
     ksData.forEach(function (d) {
-        d.Date = d.Date;
+        d.Date = new Date(d.Date);  // Ensure Date is a Date object
         d.Open = +d.Open;
         d.High = +d.High;
         d.Low = +d.Low;
@@ -13,50 +10,42 @@ function loadBollingerChart(ksData , interval = 'day') {
         d.Volume = +d.Volume;
     });
 
+    // Aggregate data based on the interval
+    ksData = aggregateData(ksData, interval); 
 
-    // ksData = aggregateData(ksData, interval);
-
-    console.log("interval" ,ksData ,  interval)
-
-    
-
-    // ksData = aggregateData(ksData, interval); 
     d3.select("#chart").selectAll("*").remove();
 
-    // Set the dimensions and margins of the chart
     var margin = { top: 20, right: 20, bottom: 70, left: 50 },
         width = 800 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
-    // Append the SVG object to the chart div
     var svg = d3.select("#chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Define x scale with yearly ticks
     var xScale = d3.scaleTime()
-        .domain(d3.extent(ksData, function (d) { return d.Date; }))
-        .range([0, width + 200]);
+        .domain(d3.extent(ksData, function(d) { return d.Date; }))
+        .range([0, width]);
 
-    // Define y scale
     var yScale = d3.scaleLinear()
-        .domain([0, d3.max(ksData, function (d) { return Math.max(d.High, d.Low, d.AdjClose); })])
+        .domain([0, d3.max(ksData, function(d) { return Math.max(d.High, d.Low, d.AdjClose); })])
         .range([height, 0]);
 
-    // Define the line functions
     var lineHigh = d3.line()
-        .x(function (d) { return xScale(d.Date); })
-        .y(function (d) { return yScale(d.High); });
+        .x(function(d) { return xScale(d.Date); })
+        .y(function(d) { return yScale(d.High); });
 
     var lineLow = d3.line()
-        .x(function (d) { return xScale(d.Date); })
-        .y(function (d) { return yScale(d.Low); });
+        .x(function(d) { return xScale(d.Date); })
+        .y(function(d) { return yScale(d.Low); });
 
     var lineAdjClose = d3.line()
-        .x(function (d) { return xScale(d.Date); })
-        .y(function (d) { return yScale(d.AdjClose); });
+        .x(function(d) { return xScale(d.Date); })
+        .y(function(d) { return yScale(d.AdjClose); });
 
-    // Append lines for High, Low, and Adj Close
     svg.append("path")
         .datum(ksData)
         .attr("class", "line")
@@ -75,58 +64,47 @@ function loadBollingerChart(ksData , interval = 'day') {
         .attr("d", lineAdjClose)
         .style("stroke", "black");
 
-    // Displays x axis
     var xAxis = d3.axisBottom(xScale)
-        .ticks(d3.timeMonth.every(3))
-        .tickFormat(d3.timeFormat("%d %b '%y"))
+        .ticks(d3.timeMonth.every(interval === 'month' ? 1 : 3))
+        .tickFormat(d3.timeFormat("%d %b '%y"));
 
-    // Append x axis to the chart
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
-        .selectAll("text") 
+        .selectAll("text")
         .style("text-anchor", "end")
         .attr("dx", "-0.8em")
         .attr("dy", "0.15em")
         .attr("transform", "rotate(-45)");
 
-    // Add y axis
     svg.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(yScale));
 }
 
-
+// Helper function to aggregate data
 function aggregateData(data, interval) {
-    var parseDate = d3.timeParse("%a %b %d %Y %H:%M:%S GMT-0500 (Eastern Standard Time)");
-    data.forEach(d => d.Date = parseDate(d.Date)); // Parse date for consistency
-
-    if (interval !== "day") {
-        var timeInterval = d3.timeDay;
+    var aggregated = d3.groups(data, d => {
         switch (interval) {
-            case "week":
-                timeInterval = d3.timeSunday;
-                break;
-            case "month":
-                timeInterval = d3.timeMonth;
-                break;
-            case "quarter":
-                timeInterval = d3.timeMonth.every(3);
-                break;
+            case 'week': return d3.timeWeek(d.Date);
+            case 'month': return d3.timeMonth(d.Date);
+            case 'quarter': return d3.timeMonth.every(3).floor(d.Date);
+            case 'day':
+            default: return d.Date;
         }
+    }).map(function(group) {
+        var dates = group[1];
+        return {
+            Date: group[0], // Start date of the interval
+            Open: d3.mean(dates, d => d.Open),
+            High: d3.max(dates, d => d.High),
+            Low: d3.min(dates, d => d.Low),
+            Close: d3.mean(dates, d => d.Close),
+            AdjClose: d3.mean(dates, d => d.AdjClose),
+            Volume: d3.sum(dates, d => d.Volume)
+        };
+    });
 
-        data = d3.rollups(data,
-            g => ({
-                Open: g[0].Open, // Open of first day in the period
-                High: d3.max(g, d => d.High), // Max high in the period
-                Low: d3.min(g, d => d.Low), // Min low in the period
-                Close: g[g.length - 1].Close, // Close of last day in the period
-                AdjClose: d3.mean(g, d => d.AdjClose), // Average adjusted close in the period
-                Date: g[0].Date // Date of the first entry in the period
-            }),
-            d => timeInterval.floor(d.Date)
-        ).map(d => d[1]); // map to get values only
-    }
-    return data;
+    return aggregated;
 }
