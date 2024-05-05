@@ -143,7 +143,19 @@ class CyclePlot {
                                 vis.clickedData.push(selectedData); // Store clicked data
 
                                 console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
-                                genRaw = vis.clickedData
+                                let quarterData = []
+
+                                for (let i = 0 ; i < vis.clickedData.length ; i++){
+                                    console.log("keyt",vis.clickedData[i])
+
+                                    
+                                    quarterData = quarterData.concat(vis.clickedData[i])
+                                }
+
+                                console.log("Array " ,quarterData)
+
+
+                                genRaw = quarterData
                                 const company = document.getElementById('company-selector').value;
                                 const interval = document.getElementById('interval-selector').value;
                                 loadData(company, interval, true)
