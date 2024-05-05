@@ -1,30 +1,32 @@
 
-function cschart(sma20 = false , sma60 = false, sma100 = false) {
-    //   var margin = { top: 0, right: 50, bottom: 40, left: 0 },
-    //       width = 780,
-    //       height = 440,
-    //    Bheight = 440;
-
-  
+function cschart(sma20 = false, sma60 = false, sma100 = false) {
     var margin = { top: 0, right: 50, bottom: 40, left: 0 },
-        width = 780, // This might be dynamic
-        height = 300, // Maintain aspect ratio if needed
+        // width = 780, // This might be dynamic
+        // height = 300, // Maintain aspect ratio if needed
         Bheight = 300;
+
+        var cardContainer = document.querySelector('.card.candle-stick-height-card');
+
+        // console.log("Card container",cardContainer)
+        width = cardContainer.clientWidth ;
+
+        console.log("Card Container Width" , cardContainer.clientWidth)
+       
+        height = 300
 
 
     function csrender(selection) {
         selection.each(function () {
 
             ///
-            var containerWidth = this.getBoundingClientRect().width;
+            // var containerWidth = this.getBoundingClientRect().width;
 
-            var divid = this.getBoundingClientRect.divid
+            // var divid = this.getBoundingClientRect.divid
 
-         
-            var containerHeight = this.getBoundingClientRect().height
+            width  = width - margin.left - margin.right 
 
-          
-            width = containerWidth - margin.left - margin.right;  // Set width based on container size
+
+            // width = containerWidth - margin.left - margin.right;  // Set width based on container size
 
             ///
 
@@ -35,7 +37,7 @@ function cschart(sma20 = false , sma60 = false, sma100 = false) {
 
             var extRight = width + margin.right;
 
-          
+
 
             var x = d3.scaleBand()
                 .range([0, width])
@@ -49,12 +51,14 @@ function cschart(sma20 = false , sma60 = false, sma100 = false) {
 
 
             var xAxis
+
+            console.log("Client Height" , cardContainer.clientHeight , "interval" , interval)
             if (interval == "week") {
                 //Temporary fix
                 // width = 630
-                tempWidth = 630
+                // tempWidth = 630
                 xAxis = d3.axisBottom(x)
-                    .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(60 / (tempWidth / genData.length)) / 2) % Math.ceil(60 / (tempWidth / genData.length))); }))
+                    .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(88 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
                     .tickFormat(d3.timeFormat(TFormat[interval]));
 
             } else {
@@ -79,7 +83,7 @@ function cschart(sma20 = false , sma60 = false, sma100 = false) {
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            
+
 
             svg.append("g")
                 .attr("class", "axis xaxis")
@@ -153,37 +157,37 @@ function cschart(sma20 = false , sma60 = false, sma100 = false) {
 
             // 20 moving average
 
-            if (sma20){
+            if (sma20) {
                 var movingAverageData20 = calculateMovingAverage(genData, 20); // Adjust the window size as needed
-            var line = d3.line()
-                .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
-                .y(function (d) { return y(d.value); });
-            svg.append("path")
-                .datum(movingAverageData20)
-                .attr("class", "moving-average-line")
-                .style("fill", "none")
-                .style("stroke", "#2B65EC") // Change color as needed
-                .style("stroke-width", 1.5)
-                .attr("d", line);
+                var line = d3.line()
+                    .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
+                    .y(function (d) { return y(d.value); });
+                svg.append("path")
+                    .datum(movingAverageData20)
+                    .attr("class", "moving-average-line")
+                    .style("fill", "none")
+                    .style("stroke", "#2B65EC") // Change color as needed
+                    .style("stroke-width", 1.5)
+                    .attr("d", line);
 
             }
-            
 
-            if (sma60){
-// 60 day moving average
-           
-var movingAverageData60 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
-// Plot moving average line
-var line = d3.line()
-    .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
-    .y(function(d) { return y(d.value); });
-svg.append("path")
-    .datum(movingAverageData60)
-    .attr("class", "moving-average-line1")
-    .style("fill", "none")
-    .style("stroke", "#93E9BE") // Change color as needed
-    .style("stroke-width", 1.5)
-    .attr("d", line);
+
+            if (sma60) {
+                // 60 day moving average
+
+                var movingAverageData60 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
+                // Plot moving average line
+                var line = d3.line()
+                    .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
+                    .y(function (d) { return y(d.value); });
+                svg.append("path")
+                    .datum(movingAverageData60)
+                    .attr("class", "moving-average-line1")
+                    .style("fill", "none")
+                    .style("stroke", "#93E9BE") // Change color as needed
+                    .style("stroke-width", 1.5)
+                    .attr("d", line);
             }
 
 
@@ -192,9 +196,9 @@ svg.append("path")
 
                 // Plot moving average line
                 var line = d3.line()
-                    .x(function(d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
-                    .y(function(d) { return y(d.value); });
-        
+                    .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
+                    .y(function (d) { return y(d.value); });
+
                 svg.append("path")
                     .datum(movingAverageData100)
                     .attr("class", "moving-average-line2")
@@ -202,16 +206,16 @@ svg.append("path")
                     .style("stroke", "orange") // Change color as needed
                     .style("stroke-width", 1)
                     .attr("d", line);
-    
+
             }
-    
-            
-           
 
-        
 
-     
-   
+
+
+
+
+
+
 
 
 
@@ -220,7 +224,7 @@ svg.append("path")
     } // csrender
 
 
-   
+
 
 
 
