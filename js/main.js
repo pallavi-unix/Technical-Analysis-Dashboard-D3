@@ -7,6 +7,33 @@ var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "qu
 var genRaw, genData;
 
 
+document.getElementById('sma20').addEventListener('change', function() {
+    if (this.checked) {
+        // // Code to add SMA 20 line to the chart
+        // addSMA(20);
+    } else {
+        // // Code to remove SMA 20 line from the chart
+        // removeSMA(20);
+    }
+});
+
+document.getElementById('sma50').addEventListener('change', function() {
+    if (this.checked) {
+        // addSMA(50);
+    } else {
+        // removeSMA(50);
+    }
+});
+
+document.getElementById('sma100').addEventListener('change', function() {
+    if (this.checked) {
+        // addSMA(100);
+    } else {
+        // removeSMA(100);
+    }
+});
+
+
 document.getElementById('interval-selector').addEventListener('change', event => {
     const interval = event.target.value;
     const company = document.getElementById('company-selector').value;
@@ -148,7 +175,6 @@ function mainjs(interval) {
 }
 
 function displayAll() {
-
     displayCS();
     displayGen(genData.length - 1);
 }
