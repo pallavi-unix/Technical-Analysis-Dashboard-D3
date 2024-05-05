@@ -12,35 +12,15 @@ var sma100 = false
 
 
 document.getElementById('sma20').addEventListener('change', function() {
-    if (this.checked) {
-        displayCS( true , false,  false)
-
-    } else {
-        displayCS( false , false,  false)
-       
-    }
+    displayCS()
 });
 
-document.getElementById('sma50').addEventListener('change', function() {
-    if (this.checked) {
-        displayCS( false , true,  false)
-       
-    } else {
-        displayCS( false , false,  false)
-        
-    }
+document.getElementById('sma60').addEventListener('change', function() {
+    displayCS()
 });
 
 document.getElementById('sma100').addEventListener('change', function() {
-    if (this.checked) {
-       
-        displayCS( false , false,  true)
-       
-    } else {
-
-        displayCS( false , false,  false)
-       
-    }
+    displayCS()
 });
 
 
@@ -181,6 +161,8 @@ function mainjs(interval) {
 
     
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
+
+   
     toPress(); displayAll();
 }
 
@@ -191,7 +173,11 @@ function displayAll() {
 
 
 
-function displayCS(sma20 = false , sma60 = false, sma100 = false) {
+function displayCS() {
+
+    sma20 = document.getElementById('sma20').checked;
+    sma60 = document.getElementById('sma60').checked;
+    sma100 = document.getElementById('sma100').checked;
     var chart = cschart(sma20, sma60, sma100).Bheight(300);
     d3.select("#candle-stick-chart").call(chart);
     hoverAll();
