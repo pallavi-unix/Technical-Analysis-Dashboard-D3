@@ -15,14 +15,27 @@ function loadBollingerChart(ksData, interval = 'day') {
 
     d3.select("#chart").selectAll("*").remove();
 
-    var margin = { top: 20, right: 20, bottom: 70, left: 50 },
-        width = 800 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    var cardContainer = document.querySelector('.card.candle-stick-height-card');
+    var cardWidth = cardContainer.clientWidth;
+    var cardHeight = cardContainer.clientHeight;
+
+    // Calculate chart dimensions
+    var margin = { top: 20, right: 20, bottom: 150, left: 50 };
+    var width = (cardWidth) - margin.left - margin.right;
+    var height = (cardHeight) - margin.top - margin.bottom;
+
+    // var margin = { top: 20, right: 20, bottom: 70, left: 50 },
+    //     width = 800 - margin.left - margin.right,
+    //     height = 400 - margin.top - margin.bottom;
 
     var svg = d3.select("#chart")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+       // .append("svg")
+        // .attr("width", width + margin.left + margin.right)
+        // .attr("height", height + margin.top + margin.bottom)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${cardWidth} ${cardHeight}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -65,7 +78,7 @@ function loadBollingerChart(ksData, interval = 'day') {
         .style("stroke", "black");
 
     var xAxis = d3.axisBottom(xScale)
-        .ticks(d3.timeMonth.every(interval === 'month' ? 1 : 3))
+        .ticks(d3.timeMonth.every(interval === 'Month' ? 1 : 3))
         .tickFormat(d3.timeFormat("%d %b '%y"));
 
     svg.append("g")
@@ -81,6 +94,20 @@ function loadBollingerChart(ksData, interval = 'day') {
     svg.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(yScale));
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0-margin.left)
+        .attr("x", 0-(height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Value");
+
+    svg.append("text")
+        .attr("transform", `translate(${width / 2},${height + 80})`)
+        .style("text-anchor", "middle")
+        .text("Date");
+
 }
 
 // Helper function to aggregate data
@@ -88,7 +115,7 @@ function aggregateData(data, interval) {
     var aggregated = d3.groups(data, d => {
         switch (interval) {
             case 'week': return d3.timeWeek(d.Date);
-            case 'month': return d3.timeMonth(d.Date);
+            case 'month': return d3.timeMonth.every(4).floor(d.Date);
             case 'quarter': return d3.timeMonth.every(3).floor(d.Date);
             case 'day':
             default: return d.Date;
