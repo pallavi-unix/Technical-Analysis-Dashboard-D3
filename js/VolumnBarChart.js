@@ -32,45 +32,77 @@ class VolumnBarChart {
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
     }
 
-    updateVis() {
+    updateVis(volumn_interval) {
         let vis = this;
-    
-        // Convert the Date string to a JavaScript Date object
+
+        console.log("Pallavi inside update vis", volumn_interval)
+
         vis.data.forEach(d => {
             d.Date = new Date(d.Date);
         });
-    
-        // Calculate daily volumes
+
+        let timeInterval, tickFormat;
+
+        switch (volumn_interval) {
+            case 'quarter':
+                timeInterval = d3.timeMonth;
+                tickFormat = d => {
+                        const date = new Date(d);
+                        const quarter = Math.ceil((date.getMonth() + 1) / 3);
+                        return `Q${quarter} ${date.getFullYear()}`;
+                    };
+                break;
+            case 'month':
+                timeInterval = d3.timeMonth.every(3);
+                tickFormat = d3.timeFormat('%b %Y');
+                break;
+            case 'week':
+                timeInterval = d3.timeWeek;
+                tickFormat = d3.timeFormat('%b %d, %Y');
+                break;
+            case 'day':
+                timeInterval = d3.timeFormat('%Y-%m-%d')
+                break
+        }
+
         vis.dailyVolumes = Array.from(
             d3.rollup(vis.data, v => d3.mean(v, d => d.Volume), d => {
-                return d3.timeFormat('%Y-%m-%d')(new Date(d.Date));
+                return timeInterval(new Date(d.Date));
             }),
             ([key, value]) => ({ Date: new Date(key), Volume: value })
         );
     
         const maxVolume = d3.max(vis.dailyVolumes, d => d.Volume);
         const maxVolumeRoundUp = Math.ceil(maxVolume / 10000000) * 10000000;
-    
+
         vis.xScale = d3.scaleBand()
             .domain(vis.dailyVolumes.map(d => d.Date))
             .range([0, vis.width])
             .padding(0.2);
-    
+
         vis.yScale = d3.scaleLinear()
             .domain([0, maxVolumeRoundUp])
             .nice()
             .range([vis.height, 0]);
-    
-        vis.xAxisCall = d3.axisBottom(vis.xScale)
-            .tickValues(vis.dailyVolumes.filter((d, i) => i % 30 === 0).map(d => d.Date))
-            .tickFormat(d3.timeFormat('%b %Y'));
-    
+
+        if(volumn_interval == "day" || volumn_interval == "week")
+        {
+            vis.xAxisCall = d3.axisBottom(vis.xScale)
+                .tickValues(vis.dailyVolumes.filter((d, i) => i % 30 === 0).map(d => d.Date))
+                .tickFormat(d3.timeFormat('%b %Y'));
+        }
+        else{
+            vis.xAxisCall = d3.axisBottom(vis.xScale)
+                .tickValues(vis.dailyVolumes.map(d => d.Date))
+                .tickFormat(tickFormat);
+        }
+
         vis.renderVis();
     }
-    
+
     renderVis() {
         let vis = this;
-    
+
         vis.chart.selectAll('.bar')
             .data(vis.dailyVolumes)
             .enter().append('rect')
@@ -80,18 +112,19 @@ class VolumnBarChart {
             .attr('y', d => vis.yScale(d.Volume))
             .attr('height', d => vis.height - vis.yScale(d.Volume))
             .attr('fill', 'steelblue');
-    
+
+        // Label for x-axis
         vis.chart.append('g')
             .attr('class', 'x-axis')
             .attr('transform', `translate(0,${vis.height})`)
             .call(vis.xAxisCall)
             .selectAll('text')
-            .attr('transform', 'rotate(-90)')
+            .attr('transform', 'rotate(-60)')
             .attr('text-anchor', 'end')
             .attr('dx', '-0.5em')
             .attr('dy', '0.5em')
             .style('font-size', '10px');
-    
+
         // Label for y-axis
         vis.svg.append("text")
             .attr("transform", "rotate(-90)")
@@ -100,7 +133,7 @@ class VolumnBarChart {
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .text("Volume");
-    
+
         vis.svg.append("text")
             .attr("transform", `translate(${vis.width / 2},${vis.height + 150})`)
             .style("text-anchor", "middle")
@@ -110,5 +143,5 @@ class VolumnBarChart {
             .call(d3.axisLeft(vis.yScale)
                 .tickValues(d3.range(0, vis.yScale.domain()[1] + 1, 10000000))
                 .tickFormat(d3.format(".2s")));
-    }   
+    }
 }

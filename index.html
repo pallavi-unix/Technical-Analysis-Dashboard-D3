@@ -74,6 +74,19 @@
                         <div class="flex-grow-1  font-text" >
                            Candlestick Chart
                         </div>
+                        <div class="form-check form-check-inline mg-left-SMA">
+                            <input class="form-check-input" type="checkbox" id="sma20" value="20">
+                            <label class="form-check-label font-text" for="sma20">SMA 20</label>
+                        </div>
+                        <div class="form-check form-check-inline mg-left-SMA">
+                            <input class="form-check-input" type="checkbox" id="sma60" value="60">
+                            <label class="form-check-label font-text" for="sma50">SMA 50</label>
+                        </div>
+                        <div class="form-check form-check-inline mg-left-SMA">
+                            <input class="form-check-input" type="checkbox" id="sma100" value="100">
+                            <label class="form-check-label font-text" for="sma100">SMA 100</label>
+                        </div>
+                        
                         <select id="interval-selector" class="form-select form-select-sm w-auto font-text" aria-label="Small select example">
                             <option value="day" selected class="font-text">Daily</option>
                             <option value="week" class="font-text">Weekly</option>
@@ -130,7 +143,7 @@
                     </div>
                    
                     <div class="card-body">
-                        <svg id="chart" class="svg-responsive" width="1000" height="400"></svg>
+                        <svg id="chart" class="svg-responsive"></svg>
                     </div>
                 </div>
             </div>

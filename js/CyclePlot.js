@@ -143,7 +143,11 @@ class CyclePlot {
                                 vis.clickedData.push(selectedData); // Store clicked data
 
                                 console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
-            
+                                genRaw = vis.clickedData
+                                const company = document.getElementById('company-selector').value;
+                                const interval = document.getElementById('interval-selector').value;
+                                loadData(company, interval, true)
+
                             }
                         });
 
@@ -165,10 +169,43 @@ class CyclePlot {
             d3.select("#cyclePlot").on("click", function (event) {
                 if (!vis.svg.node().contains(event.target)) {
                     vis.svg.selectAll(".clicked-point").remove();
-                    vis.svg.selectAll(".markup-point").remove();
-
                 }
             });
+
+            // let previousClickedPoint = null;
+            // let previousClickedQuarter = null;
+
+            // vis.svg.on("click", function (event) {
+            //     const targetClass = event.target.getAttribute("class");
+            //     if (targetClass && targetClass.includes("markup-point")) {
+            //         const clickedQuarter = hoveredQuarter;
+
+            //         if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
+            //             previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
+            //         }
+            //         const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
+            //             .attr("stroke", "black").attr("stroke-width", 2);
+
+            //         previousClickedPoint = clickedPoint;
+            //         previousClickedQuarter = clickedQuarter;
+
+            //         const selectedData = vis.data.filter(item => {
+            //             const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+            //             return itemQuarter === clickedQuarter;
+            //         });
+
+            //         console.log("Selected quarter and year from cycle plot:", clickedQuarter);
+            //         console.log("Original data for selected quarter from cycle plot:", selectedData);
+
+
+
+            //         genRaw = selectedData
+            //         const company = document.getElementById('company-selector').value;
+            //         const interval = document.getElementById('interval-selector').value;                    
+            //         loadData(company , interval , true)
+
+            //     }
+            // });
 
 
 
