@@ -8,11 +8,13 @@ class CyclePlot {
      * @param {d3.Scale} _colorScale
      */
     constructor(_config, _data, _colorScale) {
+        
         this.config = {
+            
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 900,
-            containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || { top: 25, right: 90, bottom: 75, left: 50 }
+            containerWidth: _config.containerWidth ,
+            containerHeight: _config.containerHeight ,
+            margin: _config.margin || { top: 20, right: 20, bottom: 20, left: 20 }
         };
         this.data = _data;
         this.colorScale = _colorScale;
@@ -27,12 +29,17 @@ class CyclePlot {
 
         d3.select('#cyclePlot').selectAll("*").remove();
 
-        vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
-        vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
+        var cardContainer = document.querySelector('.card.candle-stick-height-card');
+        var cardWidth = cardContainer.clientWidth;
+        var cardHeight = cardContainer.clientHeight - 30;
+
+        vis.width = (cardWidth) - vis.config.margin.left - vis.config.margin.right;
+        vis.height = (cardHeight) - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.svg = d3.select(vis.config.parentElement)
-            .attr('width', vis.config.containerWidth)
-            .attr('height', vis.config.containerHeight)
+            .attr('width', "100%")
+            .attr('height', "100%")
+            .attr("viewBox", `0 0 ${cardWidth} ${cardHeight}`)
             .append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
@@ -98,7 +105,8 @@ class CyclePlot {
                 .on("mouseover", function (event, d) {
                     vis.svg.selectAll(".markup-point").remove();
 
-                    const mouseX = event.offsetX - vis.config.margin.left;
+                    const mouseX = d3.pointer(event, vis.svg.node())[0]; // Get x-coordinate relative to the SVG
+
                     const hoveredQuarterIndex = Math.floor((mouseX / vis.width) * vis.quarterlyVolumes.length);
                     const hoveredQuarterData = vis.quarterlyVolumes[hoveredQuarterIndex];
                     hoveredQuarter = hoveredQuarterData.Quarter;
@@ -120,48 +128,48 @@ class CyclePlot {
                         .attr("cy", markupY)
                         .attr("r", 7)
                         .attr("fill", "red")
-                        .attr("class", "markup-point")
-                        .on("click", function (d) {
-                            const clickedPoint = d3.select(this); // Define clickedPoint as a local variable
+                        .attr("class", "markup-point");
+                        // .on("click", function (d) {
+                        //     const clickedPoint = d3.select(this); // Define clickedPoint as a local variable
 
-                            if (clickedPoint.classed("clicked-point")) {
-                                clickedPoint.classed("clicked-point", false);
-                                clickedPoint.classed("markup-point", true);
-                                clickedPoint.attr("stroke", null).attr("stroke-width", null);
-                                clickedPoint.remove();
-                            } else {
-                                clickedPoint.attr("stroke", "black")
-                                    .attr("stroke-width", 2);
-                                clickedPoint.classed("clicked-point", true);
-                                clickedPoint.classed("markup-point", false);
-                                const clickedQuarter = hoveredQuarterDatum.Quarter; // Define clickedQuarter
+                        //     if (clickedPoint.classed("clicked-point")) {
+                        //         clickedPoint.classed("clicked-point", false);
+                        //         clickedPoint.classed("markup-point", true);
+                        //         clickedPoint.attr("stroke", null).attr("stroke-width", null);
+                        //         clickedPoint.remove();
+                        //     } else {
+                        //         clickedPoint.attr("stroke", "black")
+                        //             .attr("stroke-width", 2);
+                        //         clickedPoint.classed("clicked-point", true);
+                        //         clickedPoint.classed("markup-point", false);
+                        //         const clickedQuarter = hoveredQuarterDatum.Quarter; // Define clickedQuarter
 
-                                const selectedData = vis.data.filter(item => {
-                                    const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
-                                    return itemQuarter === clickedQuarter;
-                                });
-                                vis.clickedData.push(selectedData); // Store clicked data
+                        //         const selectedData = vis.data.filter(item => {
+                        //             const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+                        //             return itemQuarter === clickedQuarter;
+                        //         });
+                        //         vis.clickedData.push(selectedData); // Store clicked data
 
-                                console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
-                                let quarterData = []
+                        //         console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
+                        //         let quarterData = []
 
-                                for (let i = 0 ; i < vis.clickedData.length ; i++){
-                                    console.log("keyt",vis.clickedData[i])
+                        //         for (let i = 0 ; i < vis.clickedData.length ; i++){
+                        //             console.log("keyt",vis.clickedData[i])
 
                                     
-                                    quarterData = quarterData.concat(vis.clickedData[i])
-                                }
+                        //             quarterData = quarterData.concat(vis.clickedData[i])
+                        //         }
 
-                                console.log("Array " ,quarterData)
+                        //         console.log("Array " ,quarterData)
 
 
-                                genRaw = quarterData
-                                const company = document.getElementById('company-selector').value;
-                                const interval = document.getElementById('interval-selector').value;
-                                loadData(company, interval, true)
+                        //         genRaw = quarterData
+                        //         const company = document.getElementById('company-selector').value;
+                        //         const interval = document.getElementById('interval-selector').value;
+                        //         loadData(company, interval, true)
 
-                            }
-                        });
+                        //     }
+                        // });
 
 
                     // vis.hoveredText = text;
@@ -184,48 +192,48 @@ class CyclePlot {
                 }
             });
 
-            // let previousClickedPoint = null;
-            // let previousClickedQuarter = null;
+            let previousClickedPoint = null;
+            let previousClickedQuarter = null;
 
-            // vis.svg.on("click", function (event) {
-            //     const targetClass = event.target.getAttribute("class");
-            //     if (targetClass && targetClass.includes("markup-point")) {
-            //         const clickedQuarter = hoveredQuarter;
+            vis.svg.on("click", function (event) {
+                const targetClass = event.target.getAttribute("class");
+                if (targetClass && targetClass.includes("markup-point")) {
+                    const clickedQuarter = hoveredQuarter;
 
-            //         if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
-            //             previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
-            //         }
-            //         const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
-            //             .attr("stroke", "black").attr("stroke-width", 2);
+                    if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
+                        previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
+                    }
+                    const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
+                        .attr("stroke", "black").attr("stroke-width", 2);
 
-            //         previousClickedPoint = clickedPoint;
-            //         previousClickedQuarter = clickedQuarter;
+                    previousClickedPoint = clickedPoint;
+                    previousClickedQuarter = clickedQuarter;
 
-            //         const selectedData = vis.data.filter(item => {
-            //             const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
-            //             return itemQuarter === clickedQuarter;
-            //         });
+                    const selectedData = vis.data.filter(item => {
+                        const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+                        return itemQuarter === clickedQuarter;
+                    });
 
-            //         console.log("Selected quarter and year from cycle plot:", clickedQuarter);
-            //         console.log("Original data for selected quarter from cycle plot:", selectedData);
+                    console.log("Selected quarter and year from cycle plot:", clickedQuarter);
+                    console.log("Original data for selected quarter from cycle plot:", selectedData);
 
 
 
-            //         genRaw = selectedData
-            //         const company = document.getElementById('company-selector').value;
-            //         const interval = document.getElementById('interval-selector').value;                    
-            //         loadData(company , interval , true)
+                    genRaw = selectedData
+                    const company = document.getElementById('company-selector').value;
+                    const interval = document.getElementById('interval-selector').value;                    
+                    loadData(company , interval , true)
 
-            //     }
-            // });
+                }
+            });
 
 
 
             const lastQuarterOfYear = `${year}-Q4`;
             const lastQuarterData = yearData.find(d => d.Quarter === lastQuarterOfYear);
 
-            const spaceBetweenLastQuarterAndLine = 15;
 
+            const spaceBetweenLastQuarterAndLine = 15;
 
             if (lastQuarterData) {
                 const lastQuarterX = vis.xScale(lastQuarterOfYear) + vis.xScale.bandwidth() / 2 + spaceBetweenLastQuarterAndLine;
