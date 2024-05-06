@@ -76,6 +76,9 @@ function loadData(company, cyclePlotFilter) {
     if (cyclePlotFilter) {
         loadCandleStick()
         loadVolumnChart()
+
+
+        bollingerChartData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
         loadBollingerChart(bollingerChartData)  
     }else{
         displayAllCharts(company)
