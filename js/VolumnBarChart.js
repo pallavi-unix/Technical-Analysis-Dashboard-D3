@@ -8,9 +8,10 @@ class VolumnBarChart {
     constructor(_config, _data, _colorScale) {
         this.config = {
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 500,
-            containerHeight: _config.containerHeight || 500,
-            margin: _config.margin || { top: 25, right: 20, bottom: 20, left: 35 }
+            containerWidth: _config.containerWidth,
+            //containerHeight: _config.containerHeight || 500,
+            containerHeight: _config.containerHeight ,
+            margin: _config.margin || { top: 20, right: 20, bottom: 20, left: 20 }
         };
         this.data = _data;
         this.colorScale = _colorScale;
@@ -21,13 +22,18 @@ class VolumnBarChart {
         d3.select('#volumnBarChart svg').remove();
         let vis = this;
 
-        vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
-        vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
+        var cardContainer = document.querySelector('.card.candle-stick-height-card');
+        var cardWidth = cardContainer.clientWidth - 20;
+        var cardHeight = cardContainer.clientHeight - 45;
+
+        vis.width = (cardWidth) - vis.config.margin.left - vis.config.margin.right;
+        vis.height = (cardHeight) - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.svg = d3.select(vis.config.parentElement)
             .append('svg')
-            .attr('width', vis.config.containerWidth)
-            .attr('height', vis.config.containerHeight);
+            .attr('width', "100%")
+            .attr('height', "100%")
+            .attr("viewBox", `0 0 ${cardWidth} ${cardHeight}`)
 
         vis.chart = vis.svg.append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
