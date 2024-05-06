@@ -8,11 +8,13 @@ class CyclePlot {
      * @param {d3.Scale} _colorScale
      */
     constructor(_config, _data, _colorScale) {
+        
         this.config = {
+            
             parentElement: _config.parentElement,
-            containerWidth: _config.containerWidth || 900,
-            containerHeight: _config.containerHeight || 400,
-            margin: _config.margin || { top: 25, right: 90, bottom: 75, left: 50 }
+            containerWidth: _config.containerWidth ,
+            containerHeight: _config.containerHeight ,
+            margin: _config.margin || { top: 20, right: 20, bottom: 20, left: 20 }
         };
         this.data = _data;
         this.colorScale = _colorScale;
@@ -27,12 +29,17 @@ class CyclePlot {
 
         d3.select('#cyclePlot').selectAll("*").remove();
 
-        vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
-        vis.height = vis.config.containerHeight - vis.config.margin.top - vis.config.margin.bottom;
+        var cardContainer = document.querySelector('.card.candle-stick-height-card');
+        var cardWidth = cardContainer.clientWidth;
+        var cardHeight = cardContainer.clientHeight - 30;
+
+        vis.width = (cardWidth) - vis.config.margin.left - vis.config.margin.right;
+        vis.height = (cardHeight) - vis.config.margin.top - vis.config.margin.bottom;
 
         vis.svg = d3.select(vis.config.parentElement)
-            .attr('width', vis.config.containerWidth)
-            .attr('height', vis.config.containerHeight)
+            .attr('width', "100%")
+            .attr('height', "100%")
+            .attr("viewBox", `0 0 ${cardWidth} ${cardHeight}`)
             .append('g')
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
 
@@ -98,7 +105,8 @@ class CyclePlot {
                 .on("mouseover", function (event, d) {
                     vis.svg.selectAll(".markup-point").remove();
 
-                    const mouseX = event.offsetX - vis.config.margin.left;
+                    const mouseX = d3.pointer(event, vis.svg.node())[0]; // Get x-coordinate relative to the SVG
+
                     const hoveredQuarterIndex = Math.floor((mouseX / vis.width) * vis.quarterlyVolumes.length);
                     const hoveredQuarterData = vis.quarterlyVolumes[hoveredQuarterIndex];
                     hoveredQuarter = hoveredQuarterData.Quarter;
@@ -154,16 +162,17 @@ class CyclePlot {
 
                                 console.log("Array " ,quarterData)
 
-
+                            
                                 genRaw = quarterData
                                 volumnChartData = quarterData
                                 bollingerChartData = quarterData
                                 const company = document.getElementById('company-selector').value;
                                 loadData(company,true)
-
+                            
                             }
+                        
                         });
-
+                    
 
                     // vis.hoveredText = text;
 
@@ -225,8 +234,8 @@ class CyclePlot {
             const lastQuarterOfYear = `${year}-Q4`;
             const lastQuarterData = yearData.find(d => d.Quarter === lastQuarterOfYear);
 
-            const spaceBetweenLastQuarterAndLine = 15;
 
+            const spaceBetweenLastQuarterAndLine = 15;
 
             if (lastQuarterData) {
                 const lastQuarterX = vis.xScale(lastQuarterOfYear) + vis.xScale.bandwidth() / 2 + spaceBetweenLastQuarterAndLine;
