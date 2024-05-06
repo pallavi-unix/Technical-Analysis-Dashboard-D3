@@ -106,8 +106,12 @@ window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
     // This might require ensuring data is loaded or accessible globally.
     // d3.select('#candle-stick-chart').call(cschart());
-    const company = document.getElementById('company-selector').value;
-    displayAllCharts(company)
+    // const company = document.getElementById('company-selector').value;
+    // displayAllCharts(company)
+    loadCandleStick()
+    loadBollingerChart(bollingerChartData)
+    loadCyclePlotGragh()
+    loadVolumnChart()
 
 
 
