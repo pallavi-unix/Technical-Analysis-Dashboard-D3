@@ -18,6 +18,7 @@ class VolumnBarChart {
     }
 
     initVis() {
+        d3.select('#volumnBarChart svg').remove();
         let vis = this;
 
         vis.width = vis.config.containerWidth - vis.config.margin.left - vis.config.margin.right;
@@ -32,7 +33,12 @@ class VolumnBarChart {
             .attr('transform', `translate(${vis.config.margin.left},${vis.config.margin.top})`);
     }
 
-    updateVis(volumn_interval) {
+    updateVis() {
+       
+
+        let volumn_interval = document.getElementById('interval-selector-volumn').value;
+
+        
         let vis = this;
 
         console.log("Pallavi inside update vis", volumn_interval)

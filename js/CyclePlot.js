@@ -128,49 +128,51 @@ class CyclePlot {
                         .attr("cy", markupY)
                         .attr("r", 7)
                         .attr("fill", "red")
-                        .attr("class", "markup-point");
-                        // .on("click", function (d) {
-                        //     const clickedPoint = d3.select(this); // Define clickedPoint as a local variable
+                        .attr("class", "markup-point")
+                        .on("click", function (d) {
+                            const clickedPoint = d3.select(this); // Define clickedPoint as a local variable
 
-                        //     if (clickedPoint.classed("clicked-point")) {
-                        //         clickedPoint.classed("clicked-point", false);
-                        //         clickedPoint.classed("markup-point", true);
-                        //         clickedPoint.attr("stroke", null).attr("stroke-width", null);
-                        //         clickedPoint.remove();
-                        //     } else {
-                        //         clickedPoint.attr("stroke", "black")
-                        //             .attr("stroke-width", 2);
-                        //         clickedPoint.classed("clicked-point", true);
-                        //         clickedPoint.classed("markup-point", false);
-                        //         const clickedQuarter = hoveredQuarterDatum.Quarter; // Define clickedQuarter
+                            if (clickedPoint.classed("clicked-point")) {
+                                clickedPoint.classed("clicked-point", false);
+                                clickedPoint.classed("markup-point", true);
+                                clickedPoint.attr("stroke", null).attr("stroke-width", null);
+                                clickedPoint.remove();
+                            } else {
+                                clickedPoint.attr("stroke", "black")
+                                    .attr("stroke-width", 2);
+                                clickedPoint.classed("clicked-point", true);
+                                clickedPoint.classed("markup-point", false);
+                                const clickedQuarter = hoveredQuarterDatum.Quarter; // Define clickedQuarter
 
-                        //         const selectedData = vis.data.filter(item => {
-                        //             const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
-                        //             return itemQuarter === clickedQuarter;
-                        //         });
-                        //         vis.clickedData.push(selectedData); // Store clicked data
+                                const selectedData = vis.data.filter(item => {
+                                    const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+                                    return itemQuarter === clickedQuarter;
+                                });
+                                vis.clickedData.push(selectedData); // Store clicked data
 
-                        //         console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
-                        //         let quarterData = []
+                                console.log("Original data for selected quarter from cycle plot:", vis.clickedData);
+                                let quarterData = []
 
-                        //         for (let i = 0 ; i < vis.clickedData.length ; i++){
-                        //             console.log("keyt",vis.clickedData[i])
+                                for (let i = 0 ; i < vis.clickedData.length ; i++){
+                                    console.log("keyt",vis.clickedData[i])
 
                                     
-                        //             quarterData = quarterData.concat(vis.clickedData[i])
-                        //         }
+                                    quarterData = quarterData.concat(vis.clickedData[i])
+                                }
 
-                        //         console.log("Array " ,quarterData)
+                                console.log("Array " ,quarterData)
 
-
-                        //         genRaw = quarterData
-                        //         const company = document.getElementById('company-selector').value;
-                        //         const interval = document.getElementById('interval-selector').value;
-                        //         loadData(company, interval, true)
-
-                        //     }
-                        // });
-
+                            
+                                genRaw = quarterData
+                                volumnChartData = quarterData
+                                bollingerChartData = quarterData
+                                const company = document.getElementById('company-selector').value;
+                                loadData(company,true)
+                            
+                            }
+                        
+                        });
+                    
 
                     // vis.hoveredText = text;
 
@@ -192,40 +194,40 @@ class CyclePlot {
                 }
             });
 
-            let previousClickedPoint = null;
-            let previousClickedQuarter = null;
+            // let previousClickedPoint = null;
+            // let previousClickedQuarter = null;
 
-            vis.svg.on("click", function (event) {
-                const targetClass = event.target.getAttribute("class");
-                if (targetClass && targetClass.includes("markup-point")) {
-                    const clickedQuarter = hoveredQuarter;
+            // vis.svg.on("click", function (event) {
+            //     const targetClass = event.target.getAttribute("class");
+            //     if (targetClass && targetClass.includes("markup-point")) {
+            //         const clickedQuarter = hoveredQuarter;
 
-                    if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
-                        previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
-                    }
-                    const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
-                        .attr("stroke", "black").attr("stroke-width", 2);
+            //         if (previousClickedPoint && previousClickedQuarter !== clickedQuarter) {
+            //             previousClickedPoint.attr("stroke", null).attr("stroke-width", null);
+            //         }
+            //         const clickedPoint = d3.select(event.target).classed("clicked-markup", true)
+            //             .attr("stroke", "black").attr("stroke-width", 2);
 
-                    previousClickedPoint = clickedPoint;
-                    previousClickedQuarter = clickedQuarter;
+            //         previousClickedPoint = clickedPoint;
+            //         previousClickedQuarter = clickedQuarter;
 
-                    const selectedData = vis.data.filter(item => {
-                        const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
-                        return itemQuarter === clickedQuarter;
-                    });
+            //         const selectedData = vis.data.filter(item => {
+            //             const itemQuarter = `${item.Date.getFullYear()}-Q${Math.floor((item.Date.getMonth() + 3) / 3)}`;
+            //             return itemQuarter === clickedQuarter;
+            //         });
 
-                    console.log("Selected quarter and year from cycle plot:", clickedQuarter);
-                    console.log("Original data for selected quarter from cycle plot:", selectedData);
+            //         console.log("Selected quarter and year from cycle plot:", clickedQuarter);
+            //         console.log("Original data for selected quarter from cycle plot:", selectedData);
 
 
 
-                    genRaw = selectedData
-                    const company = document.getElementById('company-selector').value;
-                    const interval = document.getElementById('interval-selector').value;                    
-                    loadData(company , interval , true)
+            //         genRaw = selectedData
+            //         const company = document.getElementById('company-selector').value;
+            //         const interval = document.getElementById('interval-selector').value;                    
+            //         loadData(company , interval , true)
 
-                }
-            });
+            //     }
+            // });
 
 
 

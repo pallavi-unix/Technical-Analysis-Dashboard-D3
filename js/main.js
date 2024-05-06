@@ -5,164 +5,122 @@ var TDays = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "4Y": 1008, "
 var TIntervals = {"3M":"day" , "5Y": "day" };
 var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
 var genRaw, genData;
-
-var sma20 = false
-var sma60 = false
-var sma100 = false
+var bollingerChartData;
+var volumnChartData;
+var cyclePlotData;
 
 
 document.getElementById('sma20').addEventListener('change', function() {
     displayCS()
 });
-
 document.getElementById('sma60').addEventListener('change', function() {
     displayCS()
 });
-
 document.getElementById('sma100').addEventListener('change', function() {
     displayCS()
 });
-
-
 document.getElementById('interval-selector').addEventListener('change', event => {
-    const interval = event.target.value;
-    const company = document.getElementById('company-selector').value;
-    loadData(company, interval , false , 'day');
-    
+    mainjs()
+});
+
+document.getElementById('interval-selector-bollinger').addEventListener('change', event => {
+    loadBollingerChart(bollingerChartData)  
 });
 
 document.getElementById('company-selector').addEventListener('change', event => {
     const company = event.target.value;
-    const interval = document.getElementById('interval-selector').value;
-    loadData(company, interval , false ,'day');
-    console.log("interval" , interval)
+    loadData(company, false);
+   
 });
-
-
-
-
-document.getElementById('interval-selector-bollinger').addEventListener('change', event => {
-    const company = document.getElementById('company-selector').value;
-    const bollinger_interval = document.getElementById('interval-selector-bollinger').value;
-    const interval = document.getElementById('interval-selector').value;
-    loadData(company, interval , false ,bollinger_interval);
-});
-
 
 document.getElementById('interval-selector-volumn').addEventListener('change', event => {
-    const company = document.getElementById('company-selector').value;
-    const bollinger_interval = document.getElementById('interval-selector-bollinger').value;
-    const volumn_interval = document.getElementById('interval-selector-volumn').value;
-    const interval = document.getElementById('interval-selector').value;
-
-    console.log("Volumn BKL" , company , volumn_interval , interval)
-    loadData(company, interval , false ,bollinger_interval , volumn_interval);
+    loadVolumnChart() 
 });
 
 
-function loadCandleStick(interval){
-    mainjs(interval)
+function loadCandleStick(){
+    mainjs()
     displayLatestInfo()
+}
+
+
+function loadVolumnChart(){
+
+    const volumnBarChartConfig = {
+        parentElement: '#volumnBarChart',
+        containerWidth: 900,
+        containerHeight: 500,
+        margin: { top: 80, right: 20, bottom: 100, left: 100 }
+    };
+    const volumnBarChart = new VolumnBarChart(volumnBarChartConfig, volumnChartData);
+    volumnBarChart.updateVis();
+
 
 }
 
-function loadData(company, interval , cyclePlotFilter , bollinger_interval , volumn_interval = 'day') {
+
+function loadCyclePlotGragh(){
+    const cyclePlotConfig = {
+        parentElement: '#cyclePlot',
+        containerWidth: 900,
+        containerHeight: 500,
+        margin: { top: 0, right: 70, bottom: 75, left: 60 }
+    };
+    
+    const cyclePlotChart = new CyclePlot(cyclePlotConfig, cyclePlotData);
+    cyclePlotChart.updateVis();
+
+}
+
+function loadData(company, cyclePlotFilter) {
     if (cyclePlotFilter) {
-        TPeriod = '3M'
-        loadCandleStick(interval)
+        loadCandleStick()
+        loadVolumnChart()
+        loadBollingerChart(bollingerChartData)  
     }else{
-        console.log("Display chart fiunctipon" , volumn_interval)
-        displayAllCharts(company , interval ,bollinger_interval , volumn_interval)
+        displayAllCharts(company)
     }
 }
 
 
-function displayAllCharts(company , interval ,bollinger_interval , volumn_interval = 'day'){
+function displayAllCharts(company){
     d3.csv(`data/${company}.csv`, genType).then(_data => {
         const data = _data
         genRaw = data;
-        loadCandleStick(interval)
-        loadBollingerChart(_data , bollinger_interval)
-        const cyclePlotConfig = {
-            parentElement: '#cyclePlot',
-            containerWidth: 900,
-            containerHeight: 500,
-            margin: { top: 25, right: 70, bottom: 75, left: 60 }
-        };
-        const volumnBarChartConfig = {
-            parentElement: '#volumnBarChart',
-            containerWidth: 900,
-            containerHeight: 500,
-            margin: { top: 80, right: 20, bottom: 100, left: 100 }
-        };
-
-        d3.select('#cyclePlot svg').remove();
-        d3.select('#volumnBarChart svg').remove();
-
-
-        const cyclePlotChart = new CyclePlot(cyclePlotConfig, data);
-        cyclePlotChart.updateVis();
-
-        console.log("Pallavi" , volumn_interval)
-        const volumnBarChart = new VolumnBarChart(volumnBarChartConfig, data);
-        volumnBarChart.updateVis(volumn_interval);
-
+        bollingerChartData = _data
+        volumnChartData = data
+        cyclePlotData = data
+        loadCandleStick()
+        loadBollingerChart(bollingerChartData)
+        loadCyclePlotGragh()
+        loadVolumnChart()
 
     })
         .catch(error => console.error(error));
 }
 
-loadData('Amazon', 'day' , false)
+loadData('Amazon',  false)
+
 
 window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
     // This might require ensuring data is loaded or accessible globally.
-    d3.select('#candle-stick-chart').call(cschart());
-  });
-
-
-  window.addEventListener('resize', function() {
-    // // Recalculate the width based on the container size
-    // var margin = { top: 0, right: 50, bottom: 40, left: 0 }
-    // var containerWidth = d3.select('#candle-stick-chart').node().getBoundingClientRect().width;
-    // width = containerWidth - margin.left - margin.right;
-  
-    // // Reset the x scale range
-    // x.range([0, width]);
-  
-    // // Recalculate tick values for the new width
-
-    
-    // xAxis.tickValues(x.domain().filter(function(d, i) {
-    //   return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
-    // }));
-  
-    // // Redraw the x-axis
-    // d3.select('.xaxis').call(xAxis);
-    
-    // // Additionally, you may need to update other chart elements that depend on the new width
-    // console.log("Function Called window resize")
-    // loadData('Amazon' , 'day')
+    // d3.select('#candle-stick-chart').call(cschart());
+    const company = document.getElementById('company-selector').value;
+    displayAllCharts(company)
 
 
 
   });
+
+ 
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
-function mainjs(interval) {
+function mainjs() {
 
-    
-    TIntervals[TPeriod] = interval
-
-    // if (TPeriod == "3M" ){
-    //     console.log("Checkkkkkk" , TPeriod,TIntervals[TPeriod] , interval)
-    //     console.log("GENRAW" ,genRaw)
-    // }
-
-    
+    console.log("Cjfifjeiofhjweoif" , document.getElementById('interval-selector').value)
+    TIntervals[TPeriod] = document.getElementById('interval-selector').value;
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
-
-   
     toPress(); displayAll();
 }
 
@@ -242,7 +200,6 @@ function updateInfoBox(d) {
 function displayLatestInfo() {
     // Assuming genData is sorted and the latest price is the last element
     var latestData = genData[genData.length - 1];
-
     // Format the date
     var formatDate = d3.time.format("%a %b %d %Y"); // Use d3.timeFormat if using d3 v4 or later
     var date = new Date(latestData.TIMESTAMP);
@@ -253,7 +210,6 @@ function displayLatestInfo() {
     var high = parseFloat(latestData.HIGH).toFixed(2);
     var low = parseFloat(latestData.LOW).toFixed(2);
     var close = parseFloat(latestData.CLOSE).toFixed(2);
-
     // Update the information box with the latest price
     d3.select("#infodate").text("Date: " + formattedDate);
     d3.select("#infoopen").text("Open: " + open);
@@ -261,7 +217,6 @@ function displayLatestInfo() {
     d3.select("#infolow").text("Low: " + low);
     d3.select("#infoclose").text("Close: " + close);
 }
-
 
 
 function displayGen(mark) {
