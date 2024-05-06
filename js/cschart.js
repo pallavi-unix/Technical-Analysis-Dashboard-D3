@@ -45,23 +45,58 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
             var xAxis
 
-            console.log("Client Height" , cardContainer.clientHeight , "interval" , interval)
+            let beforeWidth = width
+
+            console.log("Client Width" , width, "interval" , interval)
             if (interval == "week") {
                 //Temporary fix
                 // width = 630
                 // tempWidth = 630
-                xAxis = d3.axisBottom(x)
-                    .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(88 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
-                    .tickFormat(d3.timeFormat(TFormat[interval]));
 
-            } else {
-
-
+                if (width > 670){
+                    width = 670
+                }
                 xAxis = d3.axisBottom(x)
                     .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
                     .tickFormat(d3.timeFormat(TFormat[interval]));
 
+            } else {
+var count = 0
+
+                // xAxis = d3.axisBottom(x)
+                //     .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
+                //     .tickFormat(d3.timeFormat(TFormat[interval]));
+
+                if (width >= 855){
+                    width = 855
+                }else if (width >= 2170){
+                    width = 2170
+                }else if (width < 670){
+                    width = 523
+                }else if (width >= 693){
+                    width = 523
+                }
+                console.log("Before Width" , width)
+
+                xAxis = d3.axisBottom(x)
+    .tickValues(x.domain().filter(function (d, i) { 
+       
+        var result = ((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
+        result  = Math.ceil(result)
+
+        
+        count+=1
+        return !result;
+    }))
+    .tickFormat(d3.timeFormat(TFormat[interval]));
+
+    
+               
+
             }
+            console.log("After Width" , width)
+
+            width = beforeWidth
 
             var yAxis = d3.axisRight(y)
                 .ticks(Math.floor(height / 50));

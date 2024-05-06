@@ -4,7 +4,7 @@ function loadBollingerChart(ksData) {
     interval = document.getElementById('interval-selector-bollinger').value;
 
 
-    console.log("KSSSS Data" , ksData)
+   
 
     
     ksData.forEach(function (d) {

@@ -124,8 +124,6 @@ window.addEventListener('resize', function() {
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs() {
-
-    console.log("Cjfifjeiofhjweoif" , document.getElementById('interval-selector').value)
     TIntervals[TPeriod] = document.getElementById('interval-selector').value;
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
     toPress(); displayAll();

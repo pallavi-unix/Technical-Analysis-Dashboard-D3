@@ -41,7 +41,7 @@ class VolumnBarChart {
         
         let vis = this;
 
-        console.log("Pallavi inside update vis", volumn_interval)
+        
 
         vis.data.forEach(d => {
             d.Date = new Date(d.Date);
