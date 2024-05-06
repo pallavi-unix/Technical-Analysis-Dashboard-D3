@@ -1,5 +1,12 @@
-function loadBollingerChart(ksData, interval = 'day') {
+function loadBollingerChart(ksData) {
     // Parsing the date input as a date object
+
+    interval = document.getElementById('interval-selector-bollinger').value;
+
+
+    console.log("KSSSS Data" , ksData)
+
+    
     ksData.forEach(function (d) {
         d.Date = new Date(d.Date);  // Ensure Date is a Date object
         d.Open = +d.Open;

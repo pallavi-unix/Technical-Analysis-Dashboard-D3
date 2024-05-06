@@ -156,9 +156,10 @@ class CyclePlot {
 
 
                                 genRaw = quarterData
+                                volumnChartData = quarterData
+                                bollingerChartData = quarterData
                                 const company = document.getElementById('company-selector').value;
-                                const interval = document.getElementById('interval-selector').value;
-                                loadData(company, interval, true)
+                                loadData(company,true)
 
                             }
                         });
