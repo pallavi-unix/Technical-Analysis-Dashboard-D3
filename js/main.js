@@ -29,7 +29,6 @@ document.getElementById('interval-selector-bollinger').addEventListener('change'
 
 document.getElementById('company-selector').addEventListener('change', event => {
     const company = event.target.value;
-    const interval = document.getElementById('interval-selector').value;
     loadData(company, false);
    
 });
@@ -106,7 +105,12 @@ loadData('Amazon',  false)
 window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
     // This might require ensuring data is loaded or accessible globally.
-    d3.select('#candle-stick-chart').call(cschart());
+    // d3.select('#candle-stick-chart').call(cschart());
+    const company = document.getElementById('company-selector').value;
+    displayAllCharts(company)
+
+
+
   });
 
   window.addEventListener('resize', function() {
