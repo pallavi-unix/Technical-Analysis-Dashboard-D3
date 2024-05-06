@@ -29,7 +29,6 @@ document.getElementById('interval-selector-bollinger').addEventListener('change'
 
 document.getElementById('company-selector').addEventListener('change', event => {
     const company = event.target.value;
-    const interval = document.getElementById('interval-selector').value;
     loadData(company, false);
    
 });
@@ -106,35 +105,15 @@ loadData('Amazon',  false)
 window.addEventListener('resize', function() {
     // You need to ensure that the chart re-rendering happens within the context of available data.
     // This might require ensuring data is loaded or accessible globally.
-    d3.select('#candle-stick-chart').call(cschart());
-  });
-
-  window.addEventListener('resize', function() {
-    // // Recalculate the width based on the container size
-    // var margin = { top: 0, right: 50, bottom: 40, left: 0 }
-    // var containerWidth = d3.select('#candle-stick-chart').node().getBoundingClientRect().width;
-    // width = containerWidth - margin.left - margin.right;
-  
-    // // Reset the x scale range
-    // x.range([0, width]);
-  
-    // // Recalculate tick values for the new width
-
-    
-    // xAxis.tickValues(x.domain().filter(function(d, i) {
-    //   return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
-    // }));
-  
-    // // Redraw the x-axis
-    // d3.select('.xaxis').call(xAxis);
-    
-    // // Additionally, you may need to update other chart elements that depend on the new width
-    // console.log("Function Called window resize")
-    // loadData('Amazon' , 'day')
+    // d3.select('#candle-stick-chart').call(cschart());
+    const company = document.getElementById('company-selector').value;
+    displayAllCharts(company)
 
 
 
   });
+
+ 
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs() {
