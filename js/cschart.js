@@ -1,35 +1,28 @@
 
 function cschart(sma20 = false, sma60 = false, sma100 = false) {
-    var margin = { top: 0, right: 50, bottom: 40, left: 0 },
-        // width = 780, // This might be dynamic
-        // height = 300, // Maintain aspect ratio if needed
-        Bheight = 300;
-
+    var margin = { top: 0  , right: 50, bottom: 40, left: 0 }
+        
+        
+       
         var cardContainer = document.querySelector('.card.candle-stick-height-card');
 
-        // console.log("Card container",cardContainer)
+        var cardContainer1 = document.querySelector('.card-body');
         width = cardContainer.clientWidth ;
 
-        console.log("Card Container Width" , cardContainer.clientWidth)
-       
-        height = 300
+        console.log("Card Container Width" , cardContainer.clientHeight)
 
+
+        // Bheight = 300
+        //  height = 300
+        Bheight = cardContainer.clientHeight 
+        height = cardContainer.clientHeight 
 
     function csrender(selection) {
         selection.each(function () {
 
-            ///
-            // var containerWidth = this.getBoundingClientRect().width;
-
-            // var divid = this.getBoundingClientRect.divid
-
+        
             width  = width - margin.left - margin.right 
-
-
-            // width = containerWidth - margin.left - margin.right;  // Set width based on container size
-
-            ///
-
+            height = height - margin.top - margin.bottom - 120
             var interval = TIntervals[TPeriod];
 
             var minimal = d3.min(genData, function (d) { return d.LOW; });
