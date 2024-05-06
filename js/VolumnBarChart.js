@@ -53,6 +53,7 @@ class VolumnBarChart {
             d.Date = new Date(d.Date);
         });
 
+        // closing price is less than opening price then red else green
         let timeInterval, tickFormat;
 
         switch (volumn_interval) {
@@ -123,7 +124,7 @@ class VolumnBarChart {
             .attr('width', vis.xScale.bandwidth())
             .attr('y', d => vis.yScale(d.Volume))
             .attr('height', d => vis.height - vis.yScale(d.Volume))
-            .attr('fill', 'steelblue');
+            .attr('fill', 'green');
 
         // Label for x-axis
         vis.chart.append('g')
@@ -142,12 +143,15 @@ class VolumnBarChart {
             .attr("transform", "rotate(-90)")
             .attr("y", 0)
             .attr("x", 0 - (vis.height / 2))
-            .attr("dy", "1em")
+            .attr("dx", "-6em")
+            .attr("dy", "3.5em")
             .style("text-anchor", "middle")
             .text("Volume");
 
         vis.svg.append("text")
             .attr("transform", `translate(${vis.width / 2},${vis.height + 150})`)
+            .attr("dx", "6em")
+            .attr("dy", "0em")
             .style("text-anchor", "middle")
             .text("Date");
 
