@@ -1,17 +1,8 @@
 
 function cschart(sma20 = false, sma60 = false, sma100 = false) {
     var margin = { top: 0  , right: 50, bottom: 40, left: 0 }
-        
-        
-       
         var cardContainer = document.querySelector('.card.candle-stick-height-card');
-
-        var cardContainer1 = document.querySelector('.card-body');
         width = cardContainer.clientWidth ;
-
-        console.log("Card Container Width" , cardContainer.clientHeight)
-
-
         // Bheight = 300
         //  height = 300
         Bheight = cardContainer.clientHeight 
@@ -43,60 +34,19 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
 
 
-            var xAxis
+         
+            var xAxis = d3.axisBottom(x)
+    .tickValues(x.domain().filter(function(d, i) { 
+        // Calculate number of ticks based on the width
+        var maxTicks = 12; // maximum number of ticks you want to display
+        var idealTickGap = Math.floor(genData.length / maxTicks);
+        var tickInterval = Math.ceil(idealTickGap * (500 / width)); // Adjust '500' to fine-tune responsiveness
 
-            let beforeWidth = width
+        // Ensure that there's a minimum number of ticks, but not more than maxTicks
+        tickInterval = Math.max(tickInterval, Math.floor(genData.length / maxTicks));
+        return (i % tickInterval) === 0;
+    })).tickFormat(d3.timeFormat(TFormat[interval]));
 
-            console.log("Client Width" , width, "interval" , interval)
-            if (interval == "week") {
-                //Temporary fix
-                // width = 630
-                // tempWidth = 630
-
-                if (width > 670){
-                    width = 670
-                }
-                xAxis = d3.axisBottom(x)
-                    .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
-                    .tickFormat(d3.timeFormat(TFormat[interval]));
-
-            } else {
-var count = 0
-
-                // xAxis = d3.axisBottom(x)
-                //     .tickValues(x.domain().filter(function (d, i) { return !((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length))); }))
-                //     .tickFormat(d3.timeFormat(TFormat[interval]));
-
-                if (width >= 855){
-                    width = 855
-                }else if (width >= 2170){
-                    width = 2170
-                }else if (width < 670){
-                    width = 523
-                }else if (width >= 693){
-                    width = 523
-                }
-                console.log("Before Width" , width)
-
-                xAxis = d3.axisBottom(x)
-    .tickValues(x.domain().filter(function (d, i) { 
-       
-        var result = ((i + Math.floor(90 / (width / genData.length)) / 2) % Math.ceil(60 / (width / genData.length)));
-        result  = Math.ceil(result)
-
-        
-        count+=1
-        return !result;
-    }))
-    .tickFormat(d3.timeFormat(TFormat[interval]));
-
-    
-               
-
-            }
-            console.log("After Width" , width)
-
-            width = beforeWidth
 
             var yAxis = d3.axisRight(y)
                 .ticks(Math.floor(height / 50));
@@ -186,7 +136,7 @@ var count = 0
             // 20 moving average
 
             if (sma20) {
-                var movingAverageData20 = calculateMovingAverage(genData, 20); // Adjust the window size as needed
+                var movingAverageData20 = calculateMovingAverage(genData, 10); // Adjust the window size as needed
                 var line = d3.line()
                     .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
                     .y(function (d) { return y(d.value); });
@@ -213,7 +163,7 @@ var count = 0
                     .datum(movingAverageData60)
                     .attr("class", "moving-average-line1")
                     .style("fill", "none")
-                    .style("stroke", "#93E9BE") // Change color as needed
+                    .style("stroke", "#CF9FFF") // Change color as needed
                     .style("stroke-width", 1.5)
                     .attr("d", line);
             }
@@ -236,17 +186,6 @@ var count = 0
                     .attr("d", line);
 
             }
-
-
-
-
-
-
-
-
-
-
-
 
         });
     } // csrender

@@ -160,20 +160,20 @@ class CyclePlot {
                                     quarterData = quarterData.concat(vis.clickedData[i])
                                 }
 
-                                console.log("Array " ,quarterData)
-
-                            
+                                quarterData = new Set(quarterData)
+                                quarterData = Array.from(quarterData)
+                                quarterData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
                                 genRaw = quarterData
                                 volumnChartData = quarterData
                                 bollingerChartData = quarterData
+
+                                console.log("Check" , )
                                 const company = document.getElementById('company-selector').value;
                                 loadData(company,true)
                             
                             }
-                        
-                        });
                     
-
+                        });
                     // vis.hoveredText = text;
 
                 })
