@@ -7,7 +7,7 @@ var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "qu
 var genRaw, genData;
 var bollingerChartData;
 var volumnChartData;
-var cyclePlotData;
+var cyclePlotData;  
 
 
 document.getElementById('sma20').addEventListener('change', function() {
@@ -19,6 +19,20 @@ document.getElementById('sma60').addEventListener('change', function() {
 document.getElementById('sma100').addEventListener('change', function() {
     displayCS()
 });
+
+
+document.getElementById('resetfilter').addEventListener('change', function() {
+    
+
+    if (!document.getElementById('resetfilter').checked){
+            const company = document.getElementById('company-selector').value
+            loadData(company, false); 
+    }
+
+    
+});
+
+
 document.getElementById('interval-selector').addEventListener('change', event => {
     mainjs()
 });
@@ -45,7 +59,6 @@ function loadCandleStick(){
 
 
 function loadVolumnChart(){
-
     const volumnBarChartConfig = {
         parentElement: '#volumnBarChart',
         containerWidth: 900,
@@ -54,8 +67,6 @@ function loadVolumnChart(){
     };
     const volumnBarChart = new VolumnBarChart(volumnBarChartConfig, volumnChartData);
     volumnBarChart.updateVis();
-
-
 }
 
 
@@ -73,15 +84,18 @@ function loadCyclePlotGragh(){
 }
 
 function loadData(company, cyclePlotFilter) {
+    let resetFilterCheckbox = document.getElementById('resetfilter');
     if (cyclePlotFilter) {
+        resetFilterCheckbox.disabled = false;
+        document.getElementById('resetfilter').checked = true;
         loadCandleStick()
         loadVolumnChart()
-
-
-        bollingerChartData.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+        
         loadBollingerChart(bollingerChartData)  
     }else{
+        document.getElementById('resetfilter').checked = false
         displayAllCharts(company)
+        resetFilterCheckbox.disabled = true;
     }
 }
 
@@ -106,26 +120,16 @@ loadData('Amazon',  false)
 
 
 window.addEventListener('resize', function() {
-    // You need to ensure that the chart re-rendering happens within the context of available data.
-    // This might require ensuring data is loaded or accessible globally.
-    // d3.select('#candle-stick-chart').call(cschart());
-    // const company = document.getElementById('company-selector').value;
-    // displayAllCharts(company)
     loadCandleStick()
     loadBollingerChart(bollingerChartData)
     loadCyclePlotGragh()
     loadVolumnChart()
-
-
-
   });
 
  
    
 function toSlice(data) { return data.slice(-TDays[TPeriod]); }
 function mainjs() {
-
-    console.log("Cjfifjeiofhjweoif" , document.getElementById('interval-selector').value)
     TIntervals[TPeriod] = document.getElementById('interval-selector').value;
     var toPress = function () { genData = (TIntervals[TPeriod] != "day") ? dataCompress(toSlice(genRaw), TIntervals[TPeriod]) : toSlice(genRaw); };
     toPress(); displayAll();
