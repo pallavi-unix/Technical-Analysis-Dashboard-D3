@@ -1,15 +1,17 @@
 
+// Configuration and global variables
 var parseDate = d3.time.format("%Y-%m-%d").parse;
 var TPeriod = "5Y";
 var TDays = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252, "2Y": 504, "4Y": 1008, "5Y": 1258 };
 var TIntervals = {"3M":"day" , "5Y": "day" };
 var TFormat = { "day": "%d %b '%y", "week": "%d %b '%y", "month": "%b '%y" , "quarter" : "%b '%y"};
-var genRaw, genData;
+var genRaw, genData; // Variables to store raw and processed data.
 var bollingerChartData;
 var volumnChartData;
-var cyclePlotData;  
+var cyclePlotData;  // Variables to store specific chart data.
 
 
+// Event listeners for UI elements to trigger corresponding functions
 document.getElementById('sma20').addEventListener('change', function() {
     displayCS()
 });
@@ -22,8 +24,7 @@ document.getElementById('sma100').addEventListener('change', function() {
 
 
 document.getElementById('resetfilter').addEventListener('change', function() {
-    
-
+    // Reset data filter based on checkbox state
     if (!document.getElementById('resetfilter').checked){
             const company = document.getElementById('company-selector').value
             loadData(company, false); 
@@ -83,6 +84,8 @@ function loadCyclePlotGragh(){
 
 }
 
+
+
 function loadData(company, cyclePlotFilter) {
     let resetFilterCheckbox = document.getElementById('resetfilter');
     if (cyclePlotFilter) {
@@ -99,7 +102,7 @@ function loadData(company, cyclePlotFilter) {
     }
 }
 
-
+//Get Data from Excel based on companies selected 
 function displayAllCharts(company){
     d3.csv(`data/${company}.csv`, genType).then(_data => {
         const data = _data
@@ -116,6 +119,8 @@ function displayAllCharts(company){
         .catch(error => console.error(error));
 }
 
+
+// Code begins here 
 loadData('Amazon',  false)
 
 
@@ -143,7 +148,6 @@ function displayAll() {
 
 
 function displayCS() {
-
     sma20 = document.getElementById('sma20').checked;
     sma60 = document.getElementById('sma60').checked;
     sma100 = document.getElementById('sma100').checked;
@@ -158,26 +162,22 @@ function hoverAll() {
         .on("mouseover", function(event, d) {
             // Add hovered class to current element
             d3.select(this).classed("hoved", true);
-
             // Highlight corresponding elements
             d3.selectAll(".stick" + d.index).classed("hoved", true);
             d3.selectAll(".candle" + d.index).classed("hoved", true);
             d3.selectAll(".volume" + d.index).classed("hoved", true);
             d3.selectAll(".sigma" + d.index).classed("hoved", true);
-
             // Update the infoboxes with OHLC data
             updateInfoBox(d);
         })
         .on("mouseout", function(event, d) {
             // Remove hovered class from the element
             d3.select(this).classed("hoved", false);
-
             // Remove highlighting from corresponding elements
             d3.selectAll(".stick" + d.index).classed("hoved", false);
             d3.selectAll(".candle" + d.index).classed("hoved", false);
             d3.selectAll(".volume" + d.index).classed("hoved", false);
             d3.selectAll(".sigma" + d.index).classed("hoved", false);
-
             // Clear the infoboxes
             displayLatestInfo();
         });
@@ -190,13 +190,11 @@ function updateInfoBox(d) {
     var formatDate = d3.time.format("%a %b %d %Y");
     var date = new Date(d.TIMESTAMP);
     var formattedDate = formatDate(date);
-
     // Round the prices to two decimal places
     var open = parseFloat(d.OPEN).toFixed(2);
     var high = parseFloat(d.HIGH).toFixed(2);
     var low = parseFloat(d.LOW).toFixed(2);
     var close = parseFloat(d.CLOSE).toFixed(2);
-
     // Update the information box
     d3.select("#infodate").text("Date: " + formattedDate);
     d3.select("#infoopen").text("Open: " + open);
@@ -204,8 +202,6 @@ function updateInfoBox(d) {
     d3.select("#infolow").text("Low: " + low);
     d3.select("#infoclose").text("Close: " + close);
 }
-
-
 
 
 function displayLatestInfo() {

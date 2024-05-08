@@ -1,20 +1,24 @@
 
+// Function to create a candlestick chart with optional simple moving averages.
 function cschart(sma20 = false, sma60 = false, sma100 = false) {
-    var margin = { top: 0  , right: 50, bottom: 40, left: 0 }
-        var cardContainer = document.querySelector('.card.candle-stick-height-card');
-        width = cardContainer.clientWidth ;
-        Bheight = cardContainer.clientHeight 
-        height = cardContainer.clientHeight 
+    // Define the margins of the chart.
+    var margin = { top: 0, right: 50, bottom: 40, left: 0 }
+    var cardContainer = document.querySelector('.card.candle-stick-height-card');
+    width = cardContainer.clientWidth;
+    Bheight = cardContainer.clientHeight
+    height = cardContainer.clientHeight
 
+    // Main function to render the candlestick chart.
     function csrender(selection) {
         selection.each(function () {
-
-            width  = width - margin.left - margin.right 
+            // Adjust width and height based on margins.
+            width = width - margin.left - margin.right
             height = height - margin.top - margin.bottom - 120
             var interval = TIntervals[TPeriod];
             var minimal = d3.min(genData, function (d) { return d.LOW; });
             var maximal = d3.max(genData, function (d) { return d.HIGH; });
             var extRight = width + margin.right;
+            // Define x and y scales for the chart.
             var x = d3.scaleBand()
                 .range([0, width])
                 .padding(0.1)
@@ -23,28 +27,34 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
             var y = d3.scaleLinear()
                 .range([height, 0])
                 .domain([minimal, maximal]).nice();
-         
+
+
+            // Configure the x-axis with a dynamic number of ticks based on the width.    
             var xAxis = d3.axisBottom(x)
-    .tickValues(x.domain().filter(function(d, i) { 
-        // Calculate number of ticks based on the width
-        var maxTicks = 12; // maximum number of ticks you want to display
-        var idealTickGap = Math.floor(genData.length / maxTicks);
-        var tickInterval = Math.ceil(idealTickGap * (500 / width)); // Adjust '500' to fine-tune responsiveness
+                .tickValues(x.domain().filter(function (d, i) {
+                    // Calculate number of ticks based on the width
+                    var maxTicks = 12; // maximum number of ticks you want to display
+                    var idealTickGap = Math.floor(genData.length / maxTicks);
+                    var tickInterval = Math.ceil(idealTickGap * (500 / width)); // Adjust '500' to fine-tune responsiveness
 
-        // Ensure that there's a minimum number of ticks, but not more than maxTicks
-        tickInterval = Math.max(tickInterval, Math.floor(genData.length / maxTicks));
-        return (i % tickInterval) === 0;
-    })).tickFormat(d3.timeFormat(TFormat[interval]));
+                    // Ensure that there's a minimum number of ticks, but not more than maxTicks
+                    tickInterval = Math.max(tickInterval, Math.floor(genData.length / maxTicks));
+                    return (i % tickInterval) === 0;
+                })).tickFormat(d3.timeFormat(TFormat[interval]));
 
-
+            // Define the y-axis on the right.
             var yAxis = d3.axisRight(y)
                 .ticks(Math.floor(height / 50));
+
+            // Setup the SVG container for the chart.
             d3.select(this).select("svg").remove();
             var svg = d3.select(this).append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", Bheight + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            // Add x and y axes to the SVG.
             svg.append("g")
                 .attr("class", "axis xaxis")
                 .attr("transform", "translate(0," + height + ")")
@@ -109,7 +119,11 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
                 .classed("rise", function (d) { return (d.CLOSE > d.OPEN); })
                 .classed("fall", function (d) { return (d.OPEN > d.CLOSE); });
 
+
+            //Logic for Simple Moving Average 
             if (sma20) {
+
+                //20 day moving average which is changed to 10 day moving average for Demo
                 var movingAverageData20 = calculateMovingAverage(genData, 10); // Adjust the window size as needed
                 var line = d3.line()
                     .x(function (d) { return x(d.TIMESTAMP) + Math.floor(barwidth / 2); })
@@ -126,8 +140,8 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
 
             if (sma60) {
-                
 
+                //60 day moving day average calculation
                 var movingAverageData60 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
                 // Plot moving average line
                 var line = d3.line()
@@ -144,6 +158,8 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
 
             if (sma100) {
+
+                //100 day moving average calculation
                 var movingAverageData100 = calculateMovingAverage(genData, 100); // Adjust the window size as needed
 
                 // Plot moving average line
@@ -181,7 +197,7 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
 
 
-// Assuming genData is your data array and it's properly formatted and sorted
+// Function to calculate the moving average of a dataset based on a specified window size.
 function calculateMovingAverage(data, windowSize) {
     var movingAverageData = [];
     for (var i = windowSize - 1; i < data.length; i++) {

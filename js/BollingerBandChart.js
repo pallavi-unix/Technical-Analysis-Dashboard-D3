@@ -1,10 +1,11 @@
+// Function to load and render the Bollinger Band Chart with provided stock data.
 function loadBollingerChart(ksData) {
-    // Parsing the date input as a date object
-
+    // Retrieve the selected interval from a dropdown menu on the webpage.
     interval = document.getElementById('interval-selector-bollinger').value;
 
+    // Parse and convert the dataset's fields to appropriate data types.
     ksData.forEach(function (d) {
-        d.Date = new Date(d.Date);  // Ensure Date is a Date object
+        d.Date = new Date(d.Date);
         d.Open = +d.Open;
         d.High = +d.High;
         d.Low = +d.Low;
@@ -13,25 +14,29 @@ function loadBollingerChart(ksData) {
         d.Volume = +d.Volume;
     });
 
+    // Generate Bollinger Bands data.
     filtered_data = getbanddata(ksData);
 
 
-    // Aggregate data based on the interval
-    ksData = aggregateData(ksData, interval); 
+    // Aggregate data based on the selected interval (daily, weekly, monthly, etc.).
+    ksData = aggregateData(ksData, interval);
 
+
+    // Clear any existing SVG elements from the chart container.
     d3.select("#chart").selectAll("*").remove();
 
+    // Select card container for dynamic sizing.
     var cardContainer = document.querySelector('.card.candle-stick-height-card');
     var cardWidth = cardContainer.clientWidth;
     var cardHeight = cardContainer.clientHeight;
 
-    // Calculate chart dimensions
+    // Define margins and dimensions for the SVG.
     var margin = { top: 20, right: 20, bottom: 150, left: 50 };
     var width = (cardWidth) - margin.left - margin.right;
     var height = (cardHeight) - margin.top - margin.bottom;
 
-   
 
+    // Create SVG element with responsive attributes.
     var svg = d3.select("#chart")
         .attr("width", "100%")
         .attr("height", "100%")
@@ -40,61 +45,70 @@ function loadBollingerChart(ksData) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    // Define scales for the x and y axes.
     var xScale = d3.scaleTime()
-        .domain(d3.extent(ksData, function(d) { return d.Date; }))
+        .domain(d3.extent(ksData, function (d) { return d.Date; }))
         .range([0, width]);
 
     var yScale = d3.scaleLinear()
-        .domain([0, d3.max(ksData, function(d) { return Math.max(d.High, d.Low, d.AdjClose); })])
+        .domain([0, d3.max(ksData, function (d) { return Math.max(d.High, d.Low, d.AdjClose); })])
         .range([height, 0]);
 
+
+    // Define line generators for high, low, and adjusted close values.
+
     var lineHigh = d3.line()
-        .x(function(d) { return xScale(d.Date); })
-        .y(function(d) { return yScale(d.High); });
+        .x(function (d) { return xScale(d.Date); })
+        .y(function (d) { return yScale(d.High); });
 
     var lineLow = d3.line()
-        .x(function(d) { return xScale(d.Date); })
-        .y(function(d) { return yScale(d.Low); });
+        .x(function (d) { return xScale(d.Date); })
+        .y(function (d) { return yScale(d.Low); });
 
     var lineAdjClose = d3.line()
-        .x(function(d) { return xScale(d.Date); })
-        .y(function(d) { return yScale(d.AdjClose); });
+        .x(function (d) { return xScale(d.Date); })
+        .y(function (d) { return yScale(d.AdjClose); });
 
-        svg.append("path")
-    .datum(ksData)
-    .attr("class", "line")
-    .attr("d", lineHigh)
-    .style("stroke", "green")
-    .on('mouseover', function(event, d) {
-        svg.selectAll(".markup-point").remove();
-        svg.selectAll(".markup-text").remove();
-    
-        const [x, y] = d3.pointer(event);
-        const markupX = x;
-        const markupY = y;
-    
-        svg.append("circle")
-            .attr("cx", markupX)
-            .attr("cy", markupY)
-            .attr("r", 4)
-            .attr("fill", "green")
-            .attr("class", "markup-point");
+    // Append paths for high, low, and adjusted close lines with interactions.
 
-        
+
+    svg.append("path")
+        .datum(ksData)
+        .attr("class", "line")
+        .attr("d", lineHigh)
+        .style("stroke", "green")
+        .on('mouseover', function (event, d) {
+            svg.selectAll(".markup-point").remove();
+            svg.selectAll(".markup-text").remove();
+
+            const [x, y] = d3.pointer(event);
+            const markupX = x;
+            const markupY = y;
+
+            svg.append("circle")
+                .attr("cx", markupX)
+                .attr("cy", markupY)
+                .attr("r", 4)
+                .attr("fill", "green")
+                .attr("class", "markup-point");
+
+
 
             const mouseX = xScale.invert(d3.pointer(event)[0]);
             const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
 
             svg.append("text")
-            .attr("x", markupX + 10)
-            .attr("y", markupY)
-            .text(`Upper Band: ${nearestDataPoint.upperBand.toFixed(2)}`)
-            .attr("class", "markup-text");
-            
-    
-      
-    });
+                .attr("x", markupX + 10)
+                .attr("y", markupY)
+                .text(`Upper Band: ${nearestDataPoint.upperBand.toFixed(2)}`)
+                .attr("class", "markup-text");
 
+
+
+        });
+
+    // Function to find the nearest data point based on mouse position.
     function findNearestDataPoint(data, mouseX) {
         const bisectDate = d3.bisector(d => d.Date).left;
         const index = bisectDate(data, mouseX, 1);
@@ -105,41 +119,41 @@ function loadBollingerChart(ksData) {
         const nearestDataPoint = mouseX - d0.Date > d1.Date - mouseX ? d1 : d0;
         return nearestDataPoint;
     }
-         
+
 
     svg.append("path")
         .datum(ksData)
         .attr("class", "line")
         .attr("d", lineLow)
         .style("stroke", "red")
-        .on('mouseover', function(event, d) {
+        .on('mouseover', function (event, d) {
             svg.selectAll(".markup-point").remove();
             svg.selectAll(".markup-text").remove();
-        
+
             const [x, y] = d3.pointer(event);
             const markupX = x;
             const markupY = y;
-        
+
             svg.append("circle")
                 .attr("cx", markupX)
                 .attr("cy", markupY)
                 .attr("r", 4)
                 .attr("fill", "red")
                 .attr("class", "markup-point");
-    
-               
-    
-                const mouseX = xScale.invert(d3.pointer(event)[0]);
-                const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
-    
-                svg.append("text")
+
+
+
+            const mouseX = xScale.invert(d3.pointer(event)[0]);
+            const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
+
+            svg.append("text")
                 .attr("x", markupX + 10)
                 .attr("y", markupY)
                 .text(`Lower Band: ${nearestDataPoint.lowerBand.toFixed(2)}`)
                 .attr("class", "markup-text");
-                
-        
-          
+
+
+
         });
 
     svg.append("path")
@@ -147,34 +161,34 @@ function loadBollingerChart(ksData) {
         .attr("class", "line")
         .attr("d", lineAdjClose)
         .style("stroke", "black")
-        .on('mouseover', function(event, d) {
+        .on('mouseover', function (event, d) {
             svg.selectAll(".markup-point").remove();
             svg.selectAll(".markup-text").remove();
-        
+
             const [x, y] = d3.pointer(event);
             const markupX = x;
             const markupY = y;
-        
+
             svg.append("circle")
                 .attr("cx", markupX)
                 .attr("cy", markupY)
                 .attr("r", 4)
                 .attr("fill", "black")
                 .attr("class", "markup-point");
-    
-             
-    
-                const mouseX = xScale.invert(d3.pointer(event)[0]);
-                const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
-    
-                svg.append("text")
+
+
+
+            const mouseX = xScale.invert(d3.pointer(event)[0]);
+            const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
+
+            svg.append("text")
                 .attr("x", markupX + 10)
                 .attr("y", markupY)
                 .text(`Closing price: ${nearestDataPoint.movingAverage.toFixed(2)}`)
                 .attr("class", "markup-text");
-                
-        
-          
+
+
+
         });
 
     var xAxis = d3.axisBottom(xScale)
@@ -197,8 +211,8 @@ function loadBollingerChart(ksData) {
 
     svg.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0-margin.left)
-        .attr("x", 0-(height / 2))
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Value");
@@ -210,7 +224,7 @@ function loadBollingerChart(ksData) {
 
 }
 
-
+// Function to generate Bollinger Bands data.
 function getbanddata(data) {
     const movingWindow = 20;
     const numberOfStdDev = 2;
@@ -234,10 +248,10 @@ function getbanddata(data) {
             d.lowerBand = mean - numberOfStdDev * stdDev;
         }
     });
-    
+
     // Filtered data
     let filteredData = data.filter(d => d.movingAverage !== undefined && d.upperBand !== undefined && d.lowerBand !== undefined);
-    
+
     return filteredData;
 
 }
@@ -245,6 +259,7 @@ function getbanddata(data) {
 
 // Helper function to aggregate data
 function aggregateData(data, interval) {
+    // Aggregation logic for different intervals.
     var aggregated = d3.groups(data, d => {
         switch (interval) {
             case 'week': return d3.timeWeek(d.Date);
@@ -253,7 +268,7 @@ function aggregateData(data, interval) {
             case 'day':
             default: return d.Date;
         }
-    }).map(function(group) {
+    }).map(function (group) {
         var dates = group[1];
         return {
             Date: group[0], // Start date of the interval
