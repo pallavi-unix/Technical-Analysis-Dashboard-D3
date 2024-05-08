@@ -1,6 +1,4 @@
 function genType(d) {
-
- 
   d.TIMESTAMP  = parseDate(d.Date);
   d.LOW        = +d.Low;
   d.HIGH       = +d.High; 
@@ -9,8 +7,6 @@ function genType(d) {
   d.Date= d3.timeParse("%Y-%m-%d")(d.Date);
   d.AdjClose= +d["Adj Close"];
   d.Volume =  +d.Volume;
-
-
   return d;
 }
 
@@ -37,7 +33,6 @@ function dataCompress(data, interval) {
   var nestedData = d3.group(data, function(d) {
     return timeCompare(d.TIMESTAMP, interval);
   });
-
 
   var compressedData = Array.from(nestedData, function([key, values]) {
     var rollupResult = {

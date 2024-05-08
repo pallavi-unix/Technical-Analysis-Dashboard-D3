@@ -42,8 +42,6 @@ class VolumnBarChart {
         let vis = this;
         let volumn_interval = document.getElementById('interval-selector-volumn').value;
 
-        
-
         vis.data.forEach(d => {
             d.Date = new Date(d.Date);
         });
@@ -57,7 +55,6 @@ class VolumnBarChart {
         });
 
         // closing price is less than opening price then red else green
-
         let timeInterval, tickFormat;
 
         switch (volumn_interval) {
@@ -82,15 +79,8 @@ class VolumnBarChart {
                 break;
         }
 
-        // vis.dailyVolumes = Array.from(
-        //     d3.rollup(vis.data, v => d3.mean(v, d => d.Volume), d => {
-        //         return timeInterval(new Date(d.Date));
-        //     }),
-        //     ([key, value]) => ({ Date: new Date(key), Volume: value })
-        // );
-    
+       
         vis.dailyVolumes =  this.aggregateData(vis.data, volumn_interval); 
-
         const maxVolume = d3.max(vis.dailyVolumes, d => d.Volume);
         const maxVolumeRoundUp = Math.ceil(maxVolume / 10000000) * 10000000;
 
@@ -164,14 +154,7 @@ class VolumnBarChart {
             .style("fill", "black")
             .text("Date");
 
-        // vis.chart.append('g')
-        //     .call(d3.axisLeft(vis.yScale)
-        //         .tickValues(d3.range(0, vis.yScale.domain()[1] + 1, 10000000))
-        //         .tickFormat(d3.format(".2s")))
-        //     .selectAll('text') // select all the text elements for customization
-        //         .attr('transform', 'translate(-10, 0)') // adjust the x-coordinate for the tick values
-        //         .style('font-size', '10px');
-
+       
         vis.chart.append('g')
             .call(d3.axisLeft(vis.yScale)
                 .tickValues(vis.yScale.ticks(10)) // Generate 10 nicely-rounded tick values based on the y-axis domain
