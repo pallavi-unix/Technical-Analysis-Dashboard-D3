@@ -3,10 +3,6 @@ function loadBollingerChart(ksData) {
 
     interval = document.getElementById('interval-selector-bollinger').value;
 
-
-   
-
-    
     ksData.forEach(function (d) {
         d.Date = new Date(d.Date);  // Ensure Date is a Date object
         d.Open = +d.Open;
@@ -16,6 +12,9 @@ function loadBollingerChart(ksData) {
         d.AdjClose = +d["Adj Close"];
         d.Volume = +d.Volume;
     });
+
+    filtered_data = getbanddata(ksData);
+
 
     // Aggregate data based on the interval
     ksData = aggregateData(ksData, interval); 
@@ -66,23 +65,133 @@ function loadBollingerChart(ksData) {
         .x(function(d) { return xScale(d.Date); })
         .y(function(d) { return yScale(d.AdjClose); });
 
-    svg.append("path")
-        .datum(ksData)
-        .attr("class", "line")
-        .attr("d", lineHigh)
-        .style("stroke", "green");
+        svg.append("path")
+    .datum(ksData)
+    .attr("class", "line")
+    .attr("d", lineHigh)
+    .style("stroke", "green")
+    .on('mouseover', function(event, d) {
+        svg.selectAll(".markup-point").remove();
+        svg.selectAll(".markup-text").remove();
+    
+        const [x, y] = d3.pointer(event);
+        const markupX = x;
+        const markupY = y;
+    
+        svg.append("circle")
+            .attr("cx", markupX)
+            .attr("cy", markupY)
+            .attr("r", 4)
+            .attr("fill", "green")
+            .attr("class", "markup-point");
+
+            console.log("original data ",ksData);
+
+            
+            console.log("filtered data" , filtered_data);
+
+            const mouseX = xScale.invert(d3.pointer(event)[0]);
+            const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
+
+            svg.append("text")
+            .attr("x", markupX + 10)
+            .attr("y", markupY)
+            .text(`Upper Band: ${nearestDataPoint.upperBand.toFixed(2)}`)
+            .attr("class", "markup-text");
+            
+    
+      
+    });
+
+    function findNearestDataPoint(data, mouseX) {
+        const bisectDate = d3.bisector(d => d.Date).left;
+        const index = bisectDate(data, mouseX, 1);
+        if (index === 0) return data[index];
+        if (index === data.length) return data[index - 1];
+        const d0 = data[index - 1];
+        const d1 = data[index];
+        const nearestDataPoint = mouseX - d0.Date > d1.Date - mouseX ? d1 : d0;
+        return nearestDataPoint;
+    }
+         
 
     svg.append("path")
         .datum(ksData)
         .attr("class", "line")
         .attr("d", lineLow)
-        .style("stroke", "red");
+        .style("stroke", "red")
+        .on('mouseover', function(event, d) {
+            svg.selectAll(".markup-point").remove();
+            svg.selectAll(".markup-text").remove();
+        
+            const [x, y] = d3.pointer(event);
+            const markupX = x;
+            const markupY = y;
+        
+            svg.append("circle")
+                .attr("cx", markupX)
+                .attr("cy", markupY)
+                .attr("r", 4)
+                .attr("fill", "red")
+                .attr("class", "markup-point");
+    
+                console.log("original data ",ksData);
+    
+                //const filtered_data = getbanddata(ksData);
+                
+                console.log("filtered data" , filtered_data);
+    
+                const mouseX = xScale.invert(d3.pointer(event)[0]);
+                const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
+    
+                svg.append("text")
+                .attr("x", markupX + 10)
+                .attr("y", markupY)
+                .text(`Lower Band: ${nearestDataPoint.lowerBand.toFixed(2)}`)
+                .attr("class", "markup-text");
+                
+        
+          
+        });
 
     svg.append("path")
         .datum(ksData)
         .attr("class", "line")
         .attr("d", lineAdjClose)
-        .style("stroke", "black");
+        .style("stroke", "black")
+        .on('mouseover', function(event, d) {
+            svg.selectAll(".markup-point").remove();
+            svg.selectAll(".markup-text").remove();
+        
+            const [x, y] = d3.pointer(event);
+            const markupX = x;
+            const markupY = y;
+        
+            svg.append("circle")
+                .attr("cx", markupX)
+                .attr("cy", markupY)
+                .attr("r", 4)
+                .attr("fill", "black")
+                .attr("class", "markup-point");
+    
+                console.log("original data ",ksData);
+    
+                //const filtered_data = getbanddata(ksData);
+                
+                console.log("filtered data" , filtered_data);
+    
+                const mouseX = xScale.invert(d3.pointer(event)[0]);
+                const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
+    
+                svg.append("text")
+                .attr("x", markupX + 10)
+                .attr("y", markupY)
+                .text(`Closing price: ${nearestDataPoint.movingAverage.toFixed(2)}`)
+                .attr("class", "markup-text");
+                
+        
+          
+        });
 
     var xAxis = d3.axisBottom(xScale)
         .ticks(d3.timeMonth.every(interval === 'Month' ? 1 : 3))
@@ -116,6 +225,39 @@ function loadBollingerChart(ksData) {
         .text("Date");
 
 }
+
+
+function getbanddata(data) {
+    const movingWindow = 20;
+    const numberOfStdDev = 2;
+    let rollingSum = 0, rollingSquareSum = 0;
+
+    data.forEach((d, i) => {
+
+        rollingSum += d.Close;
+        rollingSquareSum += d.Close ** 2;
+        if (i >= movingWindow) {
+            rollingSum -= data[i - movingWindow].Close;
+            rollingSquareSum -= data[i - movingWindow].Close ** 2;
+        }
+        if (i >= movingWindow - 1) {
+            let mean = rollingSum / movingWindow;
+            let variance = (rollingSquareSum / movingWindow) - mean ** 2;
+            let stdDev = Math.sqrt(variance);
+
+            d.movingAverage = mean;
+            d.upperBand = mean + numberOfStdDev * stdDev;
+            d.lowerBand = mean - numberOfStdDev * stdDev;
+        }
+    });
+    
+    // Filtered data
+    let filteredData = data.filter(d => d.movingAverage !== undefined && d.upperBand !== undefined && d.lowerBand !== undefined);
+    
+    return filteredData;
+
+}
+
 
 // Helper function to aggregate data
 function aggregateData(data, interval) {
