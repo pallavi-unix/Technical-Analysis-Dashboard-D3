@@ -30,14 +30,9 @@ function loadBollingerChart(ksData) {
     var width = (cardWidth) - margin.left - margin.right;
     var height = (cardHeight) - margin.top - margin.bottom;
 
-    // var margin = { top: 20, right: 20, bottom: 70, left: 50 },
-    //     width = 800 - margin.left - margin.right,
-    //     height = 400 - margin.top - margin.bottom;
+   
 
     var svg = d3.select("#chart")
-       // .append("svg")
-        // .attr("width", width + margin.left + margin.right)
-        // .attr("height", height + margin.top + margin.bottom)
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("viewBox", `0 0 ${cardWidth} ${cardHeight}`)
@@ -85,10 +80,7 @@ function loadBollingerChart(ksData) {
             .attr("fill", "green")
             .attr("class", "markup-point");
 
-            console.log("original data ",ksData);
-
-            
-            console.log("filtered data" , filtered_data);
+        
 
             const mouseX = xScale.invert(d3.pointer(event)[0]);
             const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
@@ -135,11 +127,7 @@ function loadBollingerChart(ksData) {
                 .attr("fill", "red")
                 .attr("class", "markup-point");
     
-                console.log("original data ",ksData);
-    
-                //const filtered_data = getbanddata(ksData);
-                
-                console.log("filtered data" , filtered_data);
+               
     
                 const mouseX = xScale.invert(d3.pointer(event)[0]);
                 const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);
@@ -174,11 +162,7 @@ function loadBollingerChart(ksData) {
                 .attr("fill", "black")
                 .attr("class", "markup-point");
     
-                console.log("original data ",ksData);
-    
-                //const filtered_data = getbanddata(ksData);
-                
-                console.log("filtered data" , filtered_data);
+             
     
                 const mouseX = xScale.invert(d3.pointer(event)[0]);
                 const nearestDataPoint = findNearestDataPoint(filtered_data, mouseX);

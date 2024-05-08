@@ -3,26 +3,18 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
     var margin = { top: 0  , right: 50, bottom: 40, left: 0 }
         var cardContainer = document.querySelector('.card.candle-stick-height-card');
         width = cardContainer.clientWidth ;
-        // Bheight = 300
-        //  height = 300
         Bheight = cardContainer.clientHeight 
         height = cardContainer.clientHeight 
 
     function csrender(selection) {
         selection.each(function () {
 
-        
             width  = width - margin.left - margin.right 
             height = height - margin.top - margin.bottom - 120
             var interval = TIntervals[TPeriod];
-
             var minimal = d3.min(genData, function (d) { return d.LOW; });
             var maximal = d3.max(genData, function (d) { return d.HIGH; });
-
             var extRight = width + margin.right;
-
-
-
             var x = d3.scaleBand()
                 .range([0, width])
                 .padding(0.1)
@@ -31,9 +23,6 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
             var y = d3.scaleLinear()
                 .range([height, 0])
                 .domain([minimal, maximal]).nice();
-
-
-
          
             var xAxis = d3.axisBottom(x)
     .tickValues(x.domain().filter(function(d, i) { 
@@ -50,32 +39,20 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
             var yAxis = d3.axisRight(y)
                 .ticks(Math.floor(height / 50));
-
-
             d3.select(this).select("svg").remove();
-
-
             var svg = d3.select(this).append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", Bheight + margin.top + margin.bottom)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
             svg.append("g")
                 .attr("class", "axis xaxis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
-
-
-
             svg.append("g")
                 .attr("class", "axis yaxis")
                 .attr("transform", "translate(" + width + ",0)")
                 .call(yAxis);
-
-
             svg.append("g")
                 .attr("class", "axis grid")
                 .attr("transform", "translate(" + width + ",0)")
@@ -132,9 +109,6 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
                 .classed("rise", function (d) { return (d.CLOSE > d.OPEN); })
                 .classed("fall", function (d) { return (d.OPEN > d.CLOSE); });
 
-
-            // 20 moving average
-
             if (sma20) {
                 var movingAverageData20 = calculateMovingAverage(genData, 10); // Adjust the window size as needed
                 var line = d3.line()
@@ -152,7 +126,7 @@ function cschart(sma20 = false, sma60 = false, sma100 = false) {
 
 
             if (sma60) {
-                // 60 day moving average
+                
 
                 var movingAverageData60 = calculateMovingAverage(genData, 60); // Adjust the window size as needed
                 // Plot moving average line
